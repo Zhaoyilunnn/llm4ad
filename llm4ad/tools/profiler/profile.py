@@ -102,6 +102,7 @@ class ProfilerBase:
             return
 
         sample_order = getattr(self.__class__, '_num_samples', 0)
+
         content = {
             'sample_order': sample_order,
             'function': str(function),
@@ -165,7 +166,11 @@ class ProfilerBase:
                 print(f'======================================================\n')
             else:
                 if score is None:
-                    print(f'Sample{self.__class__._num_samples}: Score=None    Cur_Best_Score={self._cur_best_program_score: .3f}')
+                    if self._num_objs < 2:
+                        print(f'Sample{self.__class__._num_samples}: Score=None    Cur_Best_Score={self._cur_best_program_score: .3f}')
+                    else:
+                        print(
+                            f'Sample{self.__class__._num_samples}: Score=None    Cur_Best_Score=[{self._cur_best_program_score[0]: .3f}, {self._cur_best_program_score[1]: .3f}]')
                 else:
                     if self._num_objs < 2:
                         print(f'Sample{self.__class__._num_samples}: Score={score: .3f}     Cur_Best_Score={self._cur_best_program_score: .3f}')

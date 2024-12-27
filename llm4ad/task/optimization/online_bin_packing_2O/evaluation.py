@@ -70,7 +70,7 @@ def evaluate(instances: dict, priority: callable) -> Tuple[float, float]:
     # Score of heuristic function is negative of average number of bins used
     # across instances (as we want to minimize number of bins).
     running_time = time.time() - start_time
-    return -np.mean(num_bins), -running_time/len(instances) if np.mean(num_bins) < len(items) else float('-inf')
+    return -np.mean(num_bins), -running_time/len(instances)
 
 
 class OBP_2O_Evaluation(Evaluation):
@@ -98,3 +98,22 @@ class OBP_2O_Evaluation(Evaluation):
 
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
         return evaluate(self._datasets, callable_func)
+
+
+if __name__ == '__main__':
+    import numpy as np
+
+
+    def priority(item: float, bins: np.ndarray) -> np.ndarray:
+        """Returns priority with which we want to add item to each bin.
+        Args:
+            item: Size of item to be added to the bin.
+            bins: Array of capacities for each bin.
+        Return:
+            Array of same size as bins with priority score of each bin.
+        """
+        return -bins
+
+
+    bpp = OBP_2O_Evaluation()
+    bpp.evaluate_program('_', priority)

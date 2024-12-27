@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 from threading import Lock
 from typing import List, Dict
 
+import numpy as np
+
 try:
     import wandb
 except:
@@ -49,10 +51,13 @@ class MOEADProfiler(ProfilerBase):
             funcs = pop.population  # type: List[Function]
             funcs_json = []  # type: List[Dict]
             for f in funcs:
+                f_score = f.score
+                if np.isinf(np.array(f.score)).any():
+                    f_score[np.isinf(np.array(f.score))] = None
                 f_json = {
                     'algorithm': f.algorithm,
                     'function': str(f),
-                    'score': f.score
+                    'score': f_score
                 }
                 funcs_json.append(f_json)
             path = os.path.join(self._ckpt_dir, f'pop_{pop.generation}.json')
@@ -78,11 +83,15 @@ class MOEADProfiler(ProfilerBase):
             return
 
         sample_order = getattr(self.__class__, '_num_samples', 0)
+        func_score = function.score
+        if np.isinf(np.array(function.score)).any():
+            func_score[np.isinf(np.array(function.score))] = None
+
         content = {
             'sample_order': sample_order,
             'algorithm': function.algorithm,  # Added when recording
             'function': str(function),
-            'score': function.score
+            'score': func_score
         }
 
         if record_type == 'history':

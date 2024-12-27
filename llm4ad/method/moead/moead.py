@@ -33,7 +33,7 @@ class MOEAD:
                  max_generations: int | None = 10,
                  max_sample_nums: int | None = 100,
                  pop_size: int = 20,
-                 selection_num=2,
+                 selection_num=5,
                  use_e2_operator: bool = True,
                  use_m1_operator: bool = True,
                  use_m2_operator: bool = True,
@@ -46,7 +46,7 @@ class MOEAD:
                  debug_mode: bool = False,
                  multi_thread_or_process_eval: str = 'thread',
                  **kwargs):
-        """TODO:
+        """
         Args:
             llm             : an instance of 'llm4ad.base.LLM', which provides the way to query LLM.
             evaluation      : an instance of 'llm4ad.base.Evaluator', which defines the way to calculate the score of a generated function.
@@ -240,7 +240,7 @@ class MOEAD:
                 self._sample_evaluate_register(prompt)
             except Exception as e:
                 if self._debug_mode:
-                    print(e)
+                    traceback.print_exc()
                     exit()
                 continue
 
@@ -270,11 +270,11 @@ class MOEAD:
     def run(self):
         if not self._resume_mode:
             # do init
-            while len([f for f in self._population if not np.isinf(np.array(f.score)).any()]) < 1:
-                self._population = Population(pop_size=self._pop_size)
+            self._population = Population(pop_size=self._pop_size)
+            while len([f for f in self._population if not np.isinf(np.array(f.score)).any()]) < self._selection_num:
                 self._init_population()
-                print(len(self._population))
-                print()
+                self._population._generation -= 1
+
         # do evolve
         self._do_sample()
 

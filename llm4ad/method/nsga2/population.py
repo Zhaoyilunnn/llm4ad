@@ -4,6 +4,7 @@ import math
 from threading import Lock
 from typing import List
 import numpy as np
+import traceback
 from pymoo.util.nds.non_dominated_sorting import NonDominatedSorting
 from pymoo.operators.survival.rank_and_crowding.metrics import get_crowding_function
 from pymoo.util.randomized_argsort import randomized_argsort
@@ -49,13 +50,13 @@ class Population:
         # if the score is None, we still put it into the population,
         # we set the score to '-inf'
         if func.score is None:
-            func.score = [float('-inf'), float('-inf')]
+            return
+            # func.score = [float('-inf'), float('-inf')]
         try:
             self._lock.acquire()
-            if self.has_duplicate_function(func):
-                func.score = [float('-inf'), float('-inf')]
             # register to next_gen
-            self._next_gen_pop.append(func)
+            if not self.has_duplicate_function(func):
+                self._next_gen_pop.append(func)
 
             # update: perform survival if reach the pop size
             if len(self._next_gen_pop) >= self._pop_size:
@@ -113,17 +114,31 @@ class Population:
                 self._generation += 1
 
         except Exception as e:
+            traceback.print_exc()
             return
         finally:
             self._lock.release()
 
     def has_duplicate_function(self, func: str | Function) -> bool:
-        for f in self._population:
-            if str(f) == str(func) or func.score == f.score:
+        if func.score is None:
+            return True
+
+        for i in range(len(self._population)):
+            f = self._population[i]
+            if str(f) == str(func):
                 return True
-        for f in self._next_gen_pop:
-            if str(f) == str(func) or func.score == f.score:
+            if func.score[0] == f.score[0] and func.score[1] < f.score[1]:
+                self._population[i] = func
                 return True
+
+        for i in range(len(self._next_gen_pop)):
+            f = self._next_gen_pop[i]
+            if str(f) == str(func):
+                return True
+            if func.score[0] == f.score[0] and func.score[1] < f.score[1]:
+                self._next_gen_pop[i] = func
+                return True
+
         return False
 
     def selection(self) -> Function:
