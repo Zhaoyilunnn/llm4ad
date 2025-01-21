@@ -40,7 +40,9 @@ class NSGA2Profiler(ProfilerBase):
         self._pop_lock = Lock()
         if self._log_dir:
             self._ckpt_dir = os.path.join(self._log_dir, 'population')
+            self._elitist_dir = os.path.join(self._log_dir, 'elitist')
             os.makedirs(self._ckpt_dir, exist_ok=True)
+            os.makedirs(self._elitist_dir, exist_ok=True)
 
     def register_population(self, pop: Population):
         try:
@@ -52,8 +54,11 @@ class NSGA2Profiler(ProfilerBase):
             funcs_json = []  # type: List[Dict]
             for f in funcs:
                 f_score = f.score
-                if np.isinf(np.array(f.score)).any():
-                    f_score[np.isinf(np.array(f.score))] = None
+                if f.score is not None:
+                    if np.isinf(np.array(f.score)).any():
+                        f_score = None
+                    else:
+                        f_score = f_score.tolist()
                 f_json = {
                     'algorithm': f.algorithm,
                     'function': str(f),
@@ -61,6 +66,25 @@ class NSGA2Profiler(ProfilerBase):
                 }
                 funcs_json.append(f_json)
             path = os.path.join(self._ckpt_dir, f'pop_{pop.generation}.json')
+            with open(path, 'w') as json_file:
+                json.dump(funcs_json, json_file, indent=4)
+
+            # Saving the elitist
+            funcs = pop.elitist
+            for f in funcs:
+                f_score = f.score
+                if f.score is not None:
+                    if np.isinf(np.array(f.score)).any():
+                        f_score = None
+                    else:
+                        f_score = f_score.tolist()
+                f_json = {
+                    'algorithm': f.algorithm,
+                    'function': str(f),
+                    'score': f_score
+                }
+                funcs_json.append(f_json)
+            path = os.path.join(self._elitist_dir, f'elitist_{pop.generation}.json')
             with open(path, 'w') as json_file:
                 json.dump(funcs_json, json_file, indent=4)
             self.__class__._cur_gen += 1
@@ -84,9 +108,11 @@ class NSGA2Profiler(ProfilerBase):
 
         sample_order = getattr(self.__class__, '_num_samples', 0)
         func_score = function.score
-        if np.isinf(np.array(function.score)).any():
-            func_score[np.isinf(np.array(function.score))] = None
-
+        if function.score is not None:
+            if np.isinf(np.array(function.score)).any():
+                func_score = None
+            else:
+                func_score = func_score.tolist()
         content = {
             'sample_order': sample_order,
             'algorithm': function.algorithm,  # Added when recording
@@ -110,7 +136,6 @@ class NSGA2Profiler(ProfilerBase):
             data = []
 
         data.append(content)
-
         with open(path, 'w') as json_file:
             json.dump(data, json_file, indent=4)
 

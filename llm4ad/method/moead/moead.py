@@ -138,11 +138,14 @@ class MOEAD:
         func.evaluate_time = eval_time
         func.algorithm = thought
         func.sample_time = sample_time
-        if self._profiler is not None:
-            self._profiler.register_function(func)
-            if isinstance(self._profiler, MOEADProfiler):
-                self._profiler.register_population(self._population)
-            self._tot_sample_nums += 1
+        try:
+            if self._profiler is not None:
+                self._profiler.register_function(func)
+                if isinstance(self._profiler, MOEADProfiler):
+                    self._profiler.register_population(self._population)
+                self._tot_sample_nums += 1
+        except Exception as e:
+            traceback.print_exc()
 
         # register to the population
         self._population.register_function(func)
@@ -271,10 +274,11 @@ class MOEAD:
         if not self._resume_mode:
             # do init
             self._population = Population(pop_size=self._pop_size)
+            self._init_population()
             while len([f for f in self._population if not np.isinf(np.array(f.score)).any()]) < self._selection_num:
-                self._init_population()
                 self._population._generation -= 1
-
+                self._init_population()
+            print('Initializing population finished')
         # do evolve
         self._do_sample()
 

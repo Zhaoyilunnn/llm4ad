@@ -9,7 +9,7 @@ import numpy as np
 from llm4ad.base import Evaluation
 from llm4ad.task.optimization.tsp_gls_2O.get_instance import GetData, TSPInstance
 from llm4ad.task.optimization.tsp_gls_2O.template import template_program, task_description
-from gls import guided_local_search_with_time
+from .gls import guided_local_search_with_time
 
 __all__ = ['TSP_GLS_2O_Evaluation']
 
@@ -36,7 +36,7 @@ def evaluate(instance_data,n_ins,prob_size, eva: callable) -> np.ndarray:
 
     for i in range(n_ins):
         obj = solve_with_time(instance_data[i], eva)
-        print(f'{obj[0]}, {obj[1]}')
+        # print(f'{obj[0]}, {obj[1]}')
         objs[i] = np.array(obj)
 
     obj = np.mean(objs, axis=0)

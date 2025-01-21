@@ -24,6 +24,7 @@ class Population:
         self._pop_size = pop_size
         self._lock = Lock()
         self._next_gen_pop = []
+        self._elitist = []
         self._generation = generation
 
     def __len__(self):
@@ -40,18 +41,17 @@ class Population:
         return self._population
 
     @property
+    def elitist(self):
+        return self._elitist
+
+    @property
     def generation(self):
         return self._generation
 
     def register_function(self, func: Function):
-        # in population initialization, we only accept valid functions
-        if self._generation == 0 and func.score is None:
-            return
-        # if the score is None, we still put it into the population,
-        # we set the score to '-inf'
+        # we only accept valid functions
         if func.score is None:
             return
-            # func.score = [float('-inf'), float('-inf')]
         try:
             self._lock.acquire()
             # register to next_gen
@@ -59,8 +59,17 @@ class Population:
                 self._next_gen_pop.append(func)
 
             # update: perform survival if reach the pop size
-            if len(self._next_gen_pop) >= self._pop_size:
+            if len(self._next_gen_pop) >= self._pop_size or (len(self._next_gen_pop) >= self._pop_size//5 and self._generation == 0):
                 pop = self._population + self._next_gen_pop
+
+                pop_elitist = pop + self._elitist
+                objs = [ind.score for ind in pop_elitist]
+                objs_array = -np.array(objs)
+                nondom_idx = NonDominatedSorting().do(objs_array, only_non_dominated_front=True)
+                self._elitist = []
+                for idx in nondom_idx.tolist():
+                    self._elitist.append(pop_elitist[idx])
+
                 # modified from pymoo.algorithms.moo.nsga2
                 # get the objective space values and objects
                 objs = [ind.score for ind in pop]
@@ -77,10 +86,10 @@ class Population:
                     I = np.arange(len(front))
 
                     # current front sorted by crowding distance if splitting
-                    if len(survivors) + len(I) > self._pop_size:
+                    if len(survivors) + len(I) > self._pop_size // 5:
 
                         # Define how many will be removed
-                        n_remove = len(survivors) + len(front) - self._pop_size
+                        n_remove = len(survivors) + len(front) - self._pop_size // 5
 
                         # re-calculate the crowding distance of the front
                         crowding_of_front = \
@@ -112,7 +121,6 @@ class Population:
                 self._population = [pop[i] for i in survivors]
                 self._next_gen_pop = []
                 self._generation += 1
-
         except Exception as e:
             traceback.print_exc()
             return
@@ -126,19 +134,22 @@ class Population:
         for i in range(len(self._population)):
             f = self._population[i]
             if str(f) == str(func):
-                return True
-            if func.score[0] == f.score[0] and func.score[1] < f.score[1]:
-                self._population[i] = func
-                return True
+                if func.score[0] > f.score[0]:
+                    self._population[i] = func
+                    return True
+                if func.score[0] == f.score[0] and func.score[1] > f.score[1]:
+                    self._population[i] = func
+                    return True
 
         for i in range(len(self._next_gen_pop)):
             f = self._next_gen_pop[i]
             if str(f) == str(func):
-                return True
-            if func.score[0] == f.score[0] and func.score[1] < f.score[1]:
-                self._next_gen_pop[i] = func
-                return True
-
+                if func.score[0] > f.score[0]:
+                    self._next_gen_pop[i] = func
+                    return True
+                if func.score[0] == f.score[0] and func.score[1] > f.score[1]:
+                    self._next_gen_pop[i] = func
+                    return True
         return False
 
     def selection(self) -> Function:

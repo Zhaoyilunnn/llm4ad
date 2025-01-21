@@ -46,7 +46,7 @@ def online_binpack(
     return packing, bins
 
 
-def evaluate(instances: dict, priority: callable) -> Tuple[float, float]:
+def evaluate(instances: dict, priority: callable) -> np.ndarray:
     """Evaluate heuristic function on a set of online binpacking instances."""
     # List storing number of bins used for each instance.
     num_bins = []
@@ -70,7 +70,7 @@ def evaluate(instances: dict, priority: callable) -> Tuple[float, float]:
     # Score of heuristic function is negative of average number of bins used
     # across instances (as we want to minimize number of bins).
     running_time = time.time() - start_time
-    return -np.mean(num_bins), -running_time/len(instances)
+    return np.array([-np.mean(num_bins), -running_time/len(instances)])
 
 
 class OBP_2O_Evaluation(Evaluation):
