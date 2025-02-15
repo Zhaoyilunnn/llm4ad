@@ -112,7 +112,10 @@ class MEoHProfiler(ProfilerBase):
             if np.isinf(np.array(function.score)).any():
                 func_score = None
             else:
-                func_score = func_score.tolist()
+                if isinstance(function.score, np.ndarray):
+                    func_score = func_score.tolist()
+                elif isinstance(function.score, tuple):
+                    func_score = list(function.score)
         content = {
             'sample_order': sample_order,
             'algorithm': function.algorithm,  # Added when recording

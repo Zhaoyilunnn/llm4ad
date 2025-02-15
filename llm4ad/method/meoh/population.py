@@ -11,7 +11,6 @@ from codebleu.syntax_match import calc_syntax_match
 from pymoo.util.nds.non_dominated_sorting import NonDominatedSorting
 
 
-
 class Population:
     def __init__(self, pop_size, generation=0, pop: List[Function] | Population | None = None):
         if pop is None:
@@ -59,7 +58,7 @@ class Population:
                 self._next_gen_pop.append(func)
 
             # update: perform survival if reach the pop size
-            if len(self._next_gen_pop) >= self._pop_size or (len(self._next_gen_pop) >= self._pop_size//5 and self._generation == 0):
+            if len(self._next_gen_pop) >= self._pop_size or (len(self._next_gen_pop) >= self._pop_size // 4 and self._generation == 0):
                 pop = self._population + self._next_gen_pop
 
                 pop_elitist = pop + self._elitist
@@ -73,13 +72,13 @@ class Population:
                 crt_pop_size = len(pop)
                 dominated_counts = np.zeros((crt_pop_size, crt_pop_size))
                 for i in range(crt_pop_size):
-                    for j in range(i+1, crt_pop_size):
+                    for j in range(i + 1, crt_pop_size):
                         if (np.array(pop[i].score) >= np.array(pop[j].score)).all():
                             dominated_counts[i, j] = -calc_syntax_match([pop[i].entire_code], pop[j].entire_code, 'python')
                         elif (np.array(pop[j].score) >= np.array(pop[i].score)).all():
                             dominated_counts[j, i] = -calc_syntax_match([pop[j].entire_code], pop[i].entire_code, 'python')
                 dominated_counts_ = dominated_counts.sum(0)
-                self._population = [pop[i] for i in np.argsort(-dominated_counts_)[:self._pop_size//5]] # minus for descending, //5 for keep the original pop_size
+                self._population = [pop[i] for i in np.argsort(-dominated_counts_)[:self._pop_size // 5]]  # minus for descending, //5 for keep the original pop_size
                 self._next_gen_pop = []
                 self._generation += 1
         except Exception as e:
@@ -128,6 +127,6 @@ class Population:
                     elif (np.array(funcs[j].score) >= np.array(funcs[i].score)).all():
                         dominated_counts[j, i] = -calc_syntax_match([funcs[j].entire_code], funcs[i].entire_code, 'python')
             dominated_counts_ = dominated_counts.sum(0)
-            p = np.exp(dominated_counts_)/np.exp(dominated_counts_).sum()
+            p = np.exp(dominated_counts_) / np.exp(dominated_counts_).sum()
 
         return np.random.choice(funcs, p=p, replace=False)
