@@ -26,7 +26,7 @@ LLM4AD: Large Language Model for Algorithm Design
 
 ## Introduction 📖
 
-LLM4AD is an open-source Python-based Platform leveraging **Large Language Models (LLMs)** for **Automatic Algorithm Design (AD)**. 
+LLM4AD is an open-source Python-based Platform leveraging **Large Language Models (LLMs)** for **Automatic Algorithm Design (AD)**. Please refer to the [paper](https://arxiv.org/pdf/2412.17287) [LLM4AD] for detailed information, including the overview, methodology, and benchmark results.
 
 LLM4AD is accomplished with [Documents](https://llm4ad-doc.readthedocs.io/en/latest/) and [Examples](https://github.com/Optima-CityU/LLM4AD/tree/main/example) materials to support users and developers to easily test, build and deploy their own LLM4AD applications and conduct research.
 
@@ -34,9 +34,11 @@ LLM4AD was originally developed for [optimisation tasks](https://llm4ad-doc.read
 
 For more information, see the [contact list](https://github.com/Optima-CityU/LLM4AD#Contact)
 
-<img src="./assets/figs/framework.png" alt="llm4ad" style="zoom:50%;" />
+<img src="./assets/figs/overview.png" alt="llm4ad" style="zoom:50%;" />
 
 ## 🔥 News 
+
++ 2024.12 🎉🎉 **LLM4AD paper Released** [“LLM4AD: A Platform for Algorithm Design with Large Language Model"](https://arxiv.org/pdf/2412.17287) ! 
 
 + 2024.11 🎉🎉 **LLM4AD v1.0 Released**  ! 
 
@@ -173,16 +175,16 @@ Check [GUI Introduction](https://llm4ad-doc.readthedocs.io/en/latest/getting_sta
 
 | Methods                                               | Paper title                                                  |
 | ----------------------------------------------------- | ------------------------------------------------------------ |
-| RandomSampling                                        | Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models (PPSN 2024) |
-| FunSearch                                             | Mathematical Discoveries from Program Search with Large Language Models (Nature 2023) |
-| EoH<font color=red>*</font>                           | Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model (ICML 2024) |
-| (1+1)-EPS<font color=red>*</font> <br/>(HillClimbing) | Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models (PPSN 2024) |
+| **AEL** (Preliminary Version of **EoH**)        | [Algorithm Evolution using Large Language Model](https://arxiv.org/abs/2311.15249) (Arxiv 2023) |
+| **EoH**        | [Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model](https://openreview.net/pdf?id=BwAkaxqiLB) (ICML 2024) |
+| **FunSearch**                                             | [Mathematical Discoveries from Program Search with Large Language Models](https://www.nature.com/articles/s41586-023-06924-6) (Nature 2024) |
+| **RandomSampling**                                        | [Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models](https://arxiv.org/abs/2407.10873) (PPSN 2024) |
+| **(1+1)-EPS** <br/>(HillClimbing) | [Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models](https://arxiv.org/abs/2407.10873) (PPSN 2024) |
 | RegEvo                                                | coming soon                                                 |
 | Neighborhood search methods                           | coming soon                                                 |
 | Multi-objective search methods                        | coming soon                                                 |
 | Others                                                | coming soon                                                 |
 
-<font color=red>*</font>The implementation has some minor differences from the original method (demonstrated in their original paper), considering generality and multithreading acceleration.
 
 ## 📦LLM4AD Algorithm Design Tasks 
 
@@ -233,7 +235,15 @@ This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE
 If you find LLM4AD helpful please cite:
 
 ```bibtex
-Coming soon
+@article{liu2024llm4ad,
+      title={LLM4AD: A Platform for Algorithm Design with Large Language Model}, 
+      author={Fei Liu and Rui Zhang and Zhuoliang Xie and Rui Sun and Kai Li and Xi Lin and Zhenkun Wang and Zhichao Lu and Qingfu Zhang},
+      year={2024},
+      eprint={2412.17287},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2412.17287}, 
+}
 ```
 
 
@@ -242,12 +252,13 @@ Coming soon
 
 This platform is developed and maintained by LLM4AD developer group from the City University of Hong Kong (CityUHK) and the Southern University of Science and Technology (SUSTech). We develop LLM4AD platform for research purposes and hope to contribute to the research area by delivering tools for LLM-based algorithm design methods.
 
-+ **Contribution:** We are more than welcome to contribute including developing code and ideas to improve our platform.
++ **Contribution:** We are more than welcome to contribute (see our 📖 [contribution guide](https://github.com/Optima-CityU/llm4ad/tree/main/assets/contribution.md)) including developing code and ideas to improve our platform.
 + **Collaborations:** If you like our platform, and you would like to use it for profit-making purposes? We are always searching for industrial collaborations because they help direct research to meet the industry’s needs.
-+ **Issue:** If you find a bug or you have any kind of concern regarding the correctness, please report us an issue.
++ **Issue:** If you find a bug or you have any kind of concern regarding the correctness, please report us an [issue](https://github.com/Optima-CityU/llm4ad/issues).
 + **Profit Purpose:** If you intend to use LLM4AD for any profit-making purposes, please contact [us](http://www.llm4ad.com/contact.html).
 
-
+## :star: Star Trends
+[![Star History Chart](https://api.star-history.com/svg?repos=Optima-CityU/llm4ad&type=Date)](https://star-history.com/#Optima-CityU/llm4ad&Date)
 
 ## Contact
 
@@ -257,13 +268,39 @@ If you are interested in LLM4AD or if you encounter any difficulty using the pla
 
 2. Visit our collection [a collection of resources and research papers on LLM4AD](https://github.com/FeiLiu36/LLM4Opt)
 
-3. Join our QQ Group
+3. Visit [Discussions](https://github.com/Optima-CityU/llm4ad/discussions) to connect with other members of our community
+
+4. Join our QQ Group
 
    <img src="./assets/figs/qq.png" alt="LLM4AD Logo" style="width: 30%; height: auto;">
 
-4. Contact us through email fliu36-c@my.cityu.edu.hk
+5. Contact us through email fliu36-c@my.cityu.edu.hk
 
-5. Submit an [issue](https://github.com/Optima-CityU/LLM4AD)
+6. Submit an [issue](https://github.com/Optima-CityU/LLM4AD)
 
+
+
+## Contributors
+
+Any new ideas, features, and improvements are welcomed!
+
+You can contribute to LLM4AD follow our 📖 [Contribution Guide](https://github.com/Optima-CityU/llm4ad/tree/main/assets/contribution.md).
+
+Thank you for contributing to LLM4AD and welcome to being part of the LLM4AD community! :sparkles:
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="12.5%"><a href="https://github.com/FeiLiu36"><img src="https://avatars.githubusercontent.com/FeiLiu36" width="50px;" alt="Fei Liu"/><br /><sub><b>Fei Liu</b></sub></td>
+<td align="center" valign="top" width="12.5%"><a href="https://ahalikai.github.io/"><img src="https://github.com/Ahalikai/Ahalikai.github.io/blob/main/Aha.jpg?raw=true" width="50px;" alt="Kai Li"/><br /><sub><b>Kai Li</b></sub>
+        </td>
+      <td align="center" valign="top" width="12.5%"><a href="https://github.com/SunnyR7"><img src="https://avatars.githubusercontent.com/SunnyR7" width="50px;" alt="Rui Sun"/><br /><sub><b>Rui Sun</b></sub></td>
+      <td align="center" valign="top" width="12.5%"><a href="https://github.com/Acquent0"><img src="https://avatars.githubusercontent.com/Acquent0" width="50px;" alt="Julian XIE"/><br  /><sub><b>Julian XIE</b></sub>
+        </td>
+ <td align="center" valign="top" width="12.5%"><a href="https://github.com/ShunyuYao6"><img src="https://avatars.githubusercontent.com/ShunyuYao6" width="50px;" alt="Shunyu Yao"/><br /><sub><b>Shunyu Yao</b></sub>
+        </td>
+     <td align="center" valign="top" width="12.5%"><a href="https://github.com/RayZhhh"><img src="https://avatars.githubusercontent.com/RayZhhh" width="50px;" alt="Rui Zhang"/><br /><sub><b>Rui Zhang</b></sub>
+        </td>
+    </tr>
 
 
