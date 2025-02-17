@@ -1,4 +1,4 @@
-# name: str: ACROBOT
+# name: str: CarMountain
 # Parameters:
 # max_steps: int: 500
 # end
@@ -8,36 +8,28 @@ from typing import Any
 import gym
 
 from llm4ad.base import Evaluation
-from llm4ad.task.machine_learning.acrobot.template import template_program, task_description
+from llm4ad.task.machine_learning.car_mountain_continue.template import template_program, task_description
 
-__all__ = ['ACROBOT']
+__all__ = ['CarMountainContinuous']
 
 def evaluate(env: gym.Env, action_select: callable) -> float:
     """Evaluate heuristic function on car mountain problem."""
 
     observation, _ = env.reset()  # initialization
-    action = 0  # initial action
+    action = [0]  # initial action, stay static
 
-    for i in range(env._max_episode_steps + 1):  # protect upper limits
-        action = action_select(observation[0],
-                               observation[1],
-                               observation[2],
-                               observation[3],
-                               observation[4],
-                               observation[5],
-                               action)
-        observation, reward, done, truncated, info = env.step(action)
+    for i in range(env._max_episode_steps):
+        action = action_select(observation[0], observation[1], action)
+        observation, reward, done, truncated, info = env.step([action])
 
-        if done or truncated:
-            # self.env.close()
-            fitness = observation[0] + (observation[0] * observation[2] - observation[1] * observation[3]) + 2
-            if fitness <= 1:
-                return -(i + 1) / env._max_episode_steps
-            else:
-                return -fitness
+        if done:
+            return -(i / env._max_episode_steps)  # succeed
+
+        if truncated:
+            return -(max(0.5 - observation[0], 0) + 1)  # failed
 
 
-class ACROBOT(Evaluation):
+class CarMountainContinuous(Evaluation):
     """Evaluator for car mountain problem."""
 
     def __init__(self, max_steps=500, **kwargs):
@@ -58,7 +50,7 @@ class ACROBOT(Evaluation):
         )
 
         self.env = None
-        self.env = gym.make('Acrobot-v1')
+        self.env = gym.make('MountainCarContinuous-v0')
         self.env._max_episode_steps = max_steps
 
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
