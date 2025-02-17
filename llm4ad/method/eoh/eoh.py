@@ -1,10 +1,27 @@
-# name: str: EoH
-# Parameters:
-# max_generations: int: 10
-# max_sample_nums: int: 20
-# pop_size: int: 5
-# num_evaluators: int: 4
-# end
+# Module Name: EoH
+# Last Revision: 2025/2/16
+# This file is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
+#
+# Reference:
+#   - Fei Liu, Tong Xialiang, Mingxuan Yuan, Xi Lin, Fu Luo, Zhenkun Wang, Zhichao Lu, and Qingfu Zhang. 
+#       "Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model." 
+#       In Forty-first International Conference on Machine Learning (ICML). 2024.
+#
+# ------------------------------- Copyright --------------------------------
+# Copyright (c) 2025 Optima Group.
+# 
+# Permission is granted to use the LLM4AD platform for research purposes. 
+# All publications, software, or other works that utilize this platform 
+# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+# cite the following reference:
+# 
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+# with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+# 
+# For inquiries regarding commercial use or licensing, please contact 
+# http://www.llm4ad.com/contact.html
+# --------------------------------------------------------------------------
 
 from __future__ import annotations
 
@@ -193,8 +210,8 @@ class EoH:
                 prompt = EoHPrompt.get_prompt_e1(self._task_description_str, indivs, self._function_to_evolve)
 
                 if self._debug_mode:
-                    print(prompt)
-                    input()
+                    print(f"E1 Prompt: {prompt}")
+                    
 
                 self._sample_evaluate_register(prompt)
                 if not continue_loop():
@@ -206,8 +223,8 @@ class EoH:
                     prompt = EoHPrompt.get_prompt_e2(self._task_description_str, indivs, self._function_to_evolve)
 
                     if self._debug_mode:
-                        print(prompt)
-                        input()
+                        print(f"E2 Prompt: {prompt}")
+                        
 
                     self._sample_evaluate_register(prompt)
                     if not continue_loop():
@@ -219,8 +236,8 @@ class EoH:
                     prompt = EoHPrompt.get_prompt_m1(self._task_description_str, indiv, self._function_to_evolve)
 
                     if self._debug_mode:
-                        print(prompt)
-                        input()
+                        print(f"M1 Prompt: {prompt}")
+                        
 
                     self._sample_evaluate_register(prompt)
                     if not continue_loop():
@@ -232,8 +249,8 @@ class EoH:
                     prompt = EoHPrompt.get_prompt_m2(self._task_description_str, indiv, self._function_to_evolve)
 
                     if self._debug_mode:
-                        print(prompt)
-                        input()
+                        print(f"M2 Prompt: {prompt}")
+                        
 
                     self._sample_evaluate_register(prompt)
                     if not continue_loop():

@@ -1,7 +1,36 @@
-# name: str: VRPTWEvaluation
-# Parameters: 
-# timeout_seconds: int: 20
-# end
+# Module Name: VRPTWEvaluation
+# Last Revision: 2025/2/16
+# Description: Evaluates the Vehicle Routing Problem with Time Windows (VRPTW).
+#       The VRPTW involves finding optimal routes for a fleet of vehicles to serve a set of customers, 
+#       respecting time windows and vehicle capacity constraints.
+#       This module is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
+#
+# Parameters:
+#   - timeout_seconds: Maximum allowed time (in seconds) for the evaluation process: int (default: 30).
+#   - problem_size: Number of customers to serve (excluding the depot): int (default: 50).
+#   - n_instance: Number of problem instances to generate: int (default: 16).
+# 
+# References:
+#   - Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
+#       Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+#       with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+#
+# ------------------------------- Copyright --------------------------------
+# Copyright (c) 2025 Optima Group.
+# 
+# Permission is granted to use the LLM4AD platform for research purposes. 
+# All publications, software, or other works that utilize this platform 
+# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+# cite the following reference:
+# 
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+# with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+# 
+# For inquiries regarding commercial use or licensing, please contact 
+# http://www.llm4ad.com/contact.html
+# --------------------------------------------------------------------------
+
 from __future__ import annotations
 
 from typing import Any
@@ -12,19 +41,21 @@ from llm4ad.task.optimization.vrptw_construct.get_instance import GetData
 from llm4ad.task.optimization.vrptw_construct.template import template_program, task_description
 
 class VRPTWEvaluation(Evaluation):
-    def __init__(self,timeout_seconds=30, **kwargs):
+    def __init__(self,
+                 timeout_seconds=30, 
+                 problem_size = 50,
+                 n_instance = 16,
+                 **kwargs):
+        
         super().__init__(
             template_program=template_program,
             task_description=task_description,
             use_numba_accelerate=False,
             timeout_seconds=timeout_seconds
         )
-        self.problem_size = 50
-        self.n_instance = 10
-        # path = os.path.join(os.path.dirname(__file__), './_data/data.pkl')
-        # with open(path, 'rb') as f:
-        #     data = pickle.load(f)
-        # self.instance_data = data
+
+        self.problem_size = problem_size
+        self.n_instance = n_instance
 
         getData = GetData(self.n_instance, self.problem_size+1)
         self._datasets = getData.generate_instances()
