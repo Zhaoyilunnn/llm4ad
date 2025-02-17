@@ -95,8 +95,8 @@ class TSPEvaluation(Evaluation):
 
     def evaluate(self, eva: callable) -> float:
 
-        n_max = n_ins
-        dis = np.ones(n_ins)
+        n_max = self.n_instance
+        dis = np.ones(self.n_instance)
         n_ins = 0
 
         for instance, distance_matrix in self._datasets:
@@ -142,7 +142,7 @@ class TSPEvaluation(Evaluation):
             dis[n_ins] = LLM_dis
 
             n_ins += 1
-            if n_ins == n_max:
+            if n_ins == self.n_instance:
                 break
             # self.route_plot(instance,route,self.oracle[n_ins])
 
