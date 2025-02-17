@@ -3,17 +3,17 @@
 #
 # ------------------------------- Copyright --------------------------------
 # Copyright (c) 2025 Optima Group.
-# 
-# Permission is granted to use the LLM4AD platform for research purposes. 
-# All publications, software, or other works that utilize this platform 
-# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+#
+# Permission is granted to use the LLM4AD platform for research purposes.
+# All publications, software, or other works that utilize this platform
+# or any part of its codebase must acknowledge the use of "LLM4AD" and
 # cite the following reference:
-# 
-# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
-# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+#
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang,
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design
 # with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
-# 
-# For inquiries regarding commercial use or licensing, please contact 
+#
+# For inquiries regarding commercial use or licensing, please contact
 # http://www.llm4ad.com/contact.html
 # --------------------------------------------------------------------------
 
@@ -40,6 +40,7 @@ from llm4ad.gui import main_gui
 import threading
 import ttkbootstrap as ttk
 import subprocess
+import yaml
 
 ##########################################################
 
@@ -66,10 +67,10 @@ problem_para_value_name_list = []
 llm_para_entry_list = []
 llm_para_value_name_list = ['name', 'host', 'key', 'model']
 llm_para_default_value_list = ['HttpsApi', '', '', '']
-llm_para_placeholder_list = ['HttpsApi', 'api.bltcy.top', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'gpt-4o-mini-2024-07-18']
+llm_para_placeholder_list = ['HttpsApi', 'api.bltcy.top', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'gpt-4o-mini']
 
 default_method = 'eoh'
-default_problem = ['online_bin_packing', 'car_mountain', 'bactgrow']
+default_problem = ['admissible_set', 'car_mountain', 'bactgrow']
 
 log_dir = None
 figures = []
@@ -164,7 +165,7 @@ def show_algorithm_parameters(algo_name):
 
     algo_param_frame['text'] = f"{algo_name}"
 
-    required_parameters, value_type, default_value = get_required_parameters(path=f"../llm4ad/method/{algo_name}/{algo_name}.py")
+    required_parameters, value_type, default_value = get_required_parameters(path=f"../llm4ad/method/{algo_name}/paras.yaml")
     method_para_value_name_list = required_parameters
     method_para_value_type_list = value_type
     for i in range(len(required_parameters)):
@@ -192,7 +193,7 @@ def show_problem_parameters(problem_name):
 
     problem_param_frame['text'] = f"{problem_name}"
 
-    required_parameters, value_type, default_value = get_required_parameters(path=f"../llm4ad/task/{objectives_var.get()}/{problem_name}/evaluation.py")
+    required_parameters, value_type, default_value = get_required_parameters(path=f"../llm4ad/task/{objectives_var.get()}/{problem_name}/paras.yaml")
     problem_para_value_type_list = value_type
     problem_para_value_name_list = required_parameters
     for i in range(len(required_parameters)):
@@ -217,20 +218,16 @@ def get_required_parameters(path):
     value_type = []
     default_value = []
 
-    for line in open(path, "r",encoding="utf-8").readlines():
-        if line == '# end\n' or line[0] != '#':
-            break
-        if line[:13] == '# Parameters:':
-            continue
-        line = line[:-1]
-        line = line[2:]
-        line = line.split(": ")
-        required_parameters.append(line[0])
-        value_type.append(line[1])
-        if line[2] == '':
-            default_value.append(None)
+    with open(path, 'r', encoding='utf-8') as file:
+        data = yaml.safe_load(file)  # 使用 safe_load 读取 YAML 文件
+
+    for key, value in data.items():
+        required_parameters.append(key)
+        value_type.append(str(type(value)))
+        if value is None:
+            default_value.append(value)
         else:
-            default_value.append(line[2])
+            default_value.append(str(value))
 
     return required_parameters, value_type, default_value
 
@@ -381,14 +378,14 @@ def return_para():
 
     for i in range(len(method_para_entry_list)):
         method_para[method_para_value_name_list[i]] = method_para_entry_list[i].get()
-        if method_para_value_type_list[i] == 'int':
+        if method_para_value_type_list[i] == '<class \'int\'>':
             method_para[method_para_value_name_list[i]] = int(method_para_entry_list[i].get())
 
     method_para['num_samplers'] = method_para['num_evaluators']
 
     for i in range(len(problem_para_entry_list)):
         problem_para[problem_para_value_name_list[i]] = problem_para_entry_list[i].get()
-        if problem_para_value_type_list[i] == 'int':
+        if problem_para_value_type_list[i] == '<class \'int\'>':
             problem_para[problem_para_value_name_list[i]] = int(problem_para_entry_list[i].get())
 
     ####################
@@ -678,7 +675,7 @@ if __name__ == '__main__':
 
     algo_param_frame = ttk.Labelframe(container_frame_2, text="eoh", bootstyle="primary")
     algo_param_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
-    problem_param_frame = ttk.Labelframe(container_frame_2, text="online_bin_packing", bootstyle="warning")
+    problem_param_frame = ttk.Labelframe(container_frame_2, text="admissible_set", bootstyle="warning")
     problem_param_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=5, pady=5)
 
     ############
