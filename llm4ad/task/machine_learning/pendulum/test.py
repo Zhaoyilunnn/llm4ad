@@ -4,6 +4,7 @@ import numpy as np
 # 初始化Pendulum-v1环境
 env = gym.make('Pendulum-v1')  # 可选：设置 render_mode='human' 以显示图形界面
 
+
 # 定义动作选择函数
 def choose_action(x: float, y: float, angular_velocity: float, last_action: float) -> float:
 

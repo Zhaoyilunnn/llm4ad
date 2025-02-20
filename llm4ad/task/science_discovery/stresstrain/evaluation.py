@@ -1,7 +1,3 @@
-# name: str: SSEvaluation
-# Parameters:
-# timeout_seconds: int: 20
-# end
 from __future__ import annotations
 
 from typing import Any
@@ -23,7 +19,7 @@ def evaluate(data: dict, equation: callable) -> float | None:
 
     # Load data observations
     inputs, outputs = data['inputs'], data['outputs']
-    strain, temp = inputs[:,0], inputs[:,1]
+    strain, temp = inputs[:, 0], inputs[:, 1]
 
     # Optimize parameters based on data
     from scipy.optimize import minimize
@@ -32,7 +28,7 @@ def evaluate(data: dict, equation: callable) -> float | None:
         return np.mean((y_pred - outputs) ** 2)
 
     loss_partial = lambda params: loss(params)
-    result = minimize(loss_partial, [1.0]*MAX_NPARAMS, method='BFGS')
+    result = minimize(loss_partial, [1.0] * MAX_NPARAMS, method='BFGS')
 
     # Return evaluation score
     optimized_params = result.x
@@ -47,7 +43,6 @@ def evaluate(data: dict, equation: callable) -> float | None:
 class SSEvaluation(Evaluation):
 
     def __init__(self, timeout_seconds=20, **kwargs):
-
         super().__init__(
             template_program=template_program,
             task_description=task_description,
@@ -66,6 +61,7 @@ class SSEvaluation(Evaluation):
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
         return evaluate(self._datasets, callable_func)
 
+
 if __name__ == '__main__':
     def equation(strain: np.ndarray, temp: np.ndarray, params: np.ndarray) -> np.ndarray:
         """ Mathematical function for stress in Aluminium rod
@@ -79,6 +75,7 @@ if __name__ == '__main__':
             A numpy array representing stress as the result of applying the mathematical function to the inputs.
         """
         return params[0] * strain + params[1] * temp
+
 
     eval = SSEvaluation()
     res = eval.evaluate_program('', equation)

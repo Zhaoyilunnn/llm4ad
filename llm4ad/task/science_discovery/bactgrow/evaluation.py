@@ -23,7 +23,7 @@ def evaluate(data: dict, equation: callable) -> float | None:
 
     # Load data observations
     inputs, outputs = data['inputs'], data['outputs']
-    b, s, temp, pH = inputs[:,0], inputs[:,1], inputs[:,2], inputs[:,3]
+    b, s, temp, pH = inputs[:, 0], inputs[:, 1], inputs[:, 2], inputs[:, 3]
 
     # Optimize parameters based on data
     from scipy.optimize import minimize
@@ -32,7 +32,7 @@ def evaluate(data: dict, equation: callable) -> float | None:
         return np.mean((y_pred - outputs) ** 2)
 
     loss_partial = lambda params: loss(params)
-    result = minimize(loss_partial, [1.0]*MAX_NPARAMS, method='BFGS')
+    result = minimize(loss_partial, [1.0] * MAX_NPARAMS, method='BFGS')
 
     # Return evaluation score
     optimized_params = result.x
@@ -47,7 +47,6 @@ def evaluate(data: dict, equation: callable) -> float | None:
 class BGEvaluation(Evaluation):
 
     def __init__(self, timeout_seconds=20, **kwargs):
-
         super().__init__(
             template_program=template_program,
             task_description=task_description,
@@ -66,6 +65,7 @@ class BGEvaluation(Evaluation):
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
         return evaluate(self._datasets, callable_func)
 
+
 if __name__ == '__main__':
     def equation(b: np.ndarray, s: np.ndarray, temp: np.ndarray, pH: np.ndarray, params: np.ndarray) -> np.ndarray:
         """ Mathematical function for bacterial growth rate
@@ -81,6 +81,7 @@ if __name__ == '__main__':
             A numpy array representing bacterial growth rate as the result of applying the mathematical function to the inputs.
         """
         return params[0] * b + params[1] * s + params[2] * temp + params[3] * pH + params[4]
+
 
     eval = BGEvaluation()
     res = eval.evaluate_program('', equation)

@@ -12,6 +12,7 @@ from llm4ad.task.machine_learning.acrobot.template import template_program, task
 
 __all__ = ['ACROBOT']
 
+
 def evaluate(env: gym.Env, action_select: callable) -> float:
     """Evaluate heuristic function on car mountain problem."""
 

@@ -27,6 +27,7 @@ def evaluate(env: gym.Env, action_select: callable) -> float | None:
     except Exception as e:
         return None
 
+
 def evaluate_single(env: gym.Env, action_select: callable) -> float:
     """Evaluate heuristic function on moon lander problem."""
 
