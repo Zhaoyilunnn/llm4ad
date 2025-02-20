@@ -46,11 +46,11 @@ from llm4ad.task.optimization.ovrp_construct.template import template_program, t
 
 
 class OVRPEvaluation(Evaluation):
-    def __init__(self, 
-                timeout_seconds=20,
-                problem_size = 50,
-                n_instance = 16,
-                **kwargs):
+    def __init__(self,
+                 timeout_seconds=20,
+                 problem_size=50,
+                 n_instance=16,
+                 **kwargs):
 
         super().__init__(
             template_program=template_program,
@@ -58,7 +58,7 @@ class OVRPEvaluation(Evaluation):
             use_numba_accelerate=False,
             timeout_seconds=timeout_seconds
         )
-        self.problem_size = problem_size+1
+        self.problem_size = problem_size + 1
         self.n_instance = n_instance
 
         getData = GetData(self.n_instance, self.problem_size)
@@ -109,12 +109,12 @@ class OVRPEvaluation(Evaluation):
             for j in range(len(r) - 1):
                 start_node = r[j]
                 end_node = r[j + 1]
-                ax.plot([x[start_node], x[end_node]], [y[start_node], y[end_node]], color=color, linestyle='--', linewidth=1, label=f'Route {i+1}' if j == 0 else None)
+                ax.plot([x[start_node], x[end_node]], [y[start_node], y[end_node]], color=color, linestyle='--', linewidth=1, label=f'Route {i + 1}' if j == 0 else None)
 
                 # Add load information
                 if end_node != 0:  # If not returning to the depot
                     ax.text((x[start_node] + x[end_node]) / 2, (y[start_node] + y[end_node]) / 2,
-                            f'Load: {sum(demands[r[:j+1]])}', ha='center', va='center', fontsize=8, rotation=45)
+                            f'Load: {sum(demands[r[:j + 1]])}', ha='center', va='center', fontsize=8, rotation=45)
 
             # Mark start and end nodes of the route with triangles (excluding depot)
             if len(r) > 1:
@@ -131,13 +131,11 @@ class OVRPEvaluation(Evaluation):
         plt.tight_layout()
         plt.show()
 
-
     def tour_cost(self, instance, solution):
         cost = 0
         for j in range(len(solution) - 1):
             cost += np.linalg.norm(instance[int(solution[j])] - instance[int(solution[j + 1])])
         return cost
-
 
     def route_construct(self, distance_matrix, demands, vehicle_capacity, heuristic):
         route = []
@@ -151,11 +149,11 @@ class OVRPEvaluation(Evaluation):
 
         while unvisited_nodes:
             next_node = heuristic(current_node,
-                                    0,
-                                    feasible_unvisited_nodes,  # copy
-                                    vehicle_capacity - current_load,
-                                    copy.deepcopy(demands),  # copy
-                                    copy.deepcopy(distance_matrix))  # copy
+                                  0,
+                                  feasible_unvisited_nodes,  # copy
+                                  vehicle_capacity - current_load,
+                                  copy.deepcopy(demands),  # copy
+                                  copy.deepcopy(distance_matrix))  # copy
             if next_node == 0:
                 # Update route and load
                 route.append(next_node)
@@ -171,7 +169,6 @@ class OVRPEvaluation(Evaluation):
             feasible_nodes_capacity = np.array([node for node in all_nodes if current_load + demands[node] <= vehicle_capacity])
             # Determine feasible and unvisited nodes
             feasible_unvisited_nodes = np.intersect1d(feasible_nodes_capacity, list(unvisited_nodes))
-            
 
             if len(unvisited_nodes) > 0 and len(feasible_unvisited_nodes) < 1:
                 route.append(0)
@@ -183,9 +180,8 @@ class OVRPEvaluation(Evaluation):
         independent_values = set(route)
         if len(independent_values) != self.problem_size:
             return None
-        
-        return route
 
+        return route
 
     def evaluate(self, heuristic):
         dis = np.ones(self.n_instance)
@@ -204,6 +200,7 @@ class OVRPEvaluation(Evaluation):
 
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
         return self.evaluate(callable_func)
+
 
 if __name__ == '__main__':
     def select_next_node(current_node: int, depot: int, unvisited_nodes: np.ndarray, rest_capacity: np.ndarray, demands: np.ndarray, distance_matrix: np.ndarray) -> int:

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class GetData:
     def __init__(self, n_instance: int, n_jobs: int, n_machines: int):
         """
@@ -41,6 +42,7 @@ class GetData:
 
         return instance_data
 
+
 def determine_next_operation(current_status, feasible_operations):
     """
     Determine the next operation to schedule based on a greedy heuristic.
@@ -55,6 +57,7 @@ def determine_next_operation(current_status, feasible_operations):
     # Simple greedy heuristic: choose the operation with the shortest processing time
     next_operation = min(feasible_operations, key=lambda x: x[2])
     return next_operation
+
 
 def schedule_jobs(processing_times, n_jobs, n_machines):
     """
@@ -88,7 +91,7 @@ def schedule_jobs(processing_times, n_jobs, n_machines):
             if job_status[job_id] <= machine_status[machine_id]:
                 feasible_operations.append(operation)
 
-        if len(feasible_operations)==0:
+        if len(feasible_operations) == 0:
             next_operation = all_operations[0]
         else:
             # Determine the next operation to schedule
@@ -109,6 +112,7 @@ def schedule_jobs(processing_times, n_jobs, n_machines):
     makespan = max(job_status)
     return makespan, operation_sequence
 
+
 # Example usage
 if __name__ == "__main__":
     # Generate data
@@ -116,7 +120,6 @@ if __name__ == "__main__":
 
     for instance in data_generator:
         processing_times, n1, n2 = instance
-        makespan,solution = schedule_jobs(processing_times, n1, n2)
+        makespan, solution = schedule_jobs(processing_times, n1, n2)
         print(makespan)
         print(solution)
-

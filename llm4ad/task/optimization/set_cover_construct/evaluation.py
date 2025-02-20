@@ -45,15 +45,16 @@ __all__ = ['SCPEvaluation']
 
 import matplotlib.pyplot as plt
 
+
 class SCPEvaluation(Evaluation):
     """Evaluator for the Set Covering Problem."""
 
     def __init__(self,
-                 timeout_seconds = 30,
-                 n_instance: int = 16, 
-                 n_elements: int = 50, 
-                 n_subsets: int = 50, 
-                 max_subset_size: int = 8, 
+                 timeout_seconds=30,
+                 n_instance: int = 16,
+                 n_elements: int = 50,
+                 n_subsets: int = 50,
+                 max_subset_size: int = 8,
                  **kwargs):
         """
         Args:
@@ -73,7 +74,7 @@ class SCPEvaluation(Evaluation):
         self.n_elements = n_elements
         self.n_subsets = n_subsets
         self.max_subset_size = max_subset_size
-        
+
         getData = GetData(self.n_instance, self.n_elements, self.n_subsets, self.max_subset_size)
         self._datasets = getData.generate_instances()
 
@@ -104,23 +105,23 @@ class SCPEvaluation(Evaluation):
 
         # Plot the universal set
         plt.figure(figsize=(10, 6))
-        plt.scatter([element_positions[element] for element in universal_set], [0] * len(universal_set), 
+        plt.scatter([element_positions[element] for element in universal_set], [0] * len(universal_set),
                     color='blue', label='Universal Set', s=100)
 
         # Plot the selected subsets
         for subset_idx, subset in enumerate(selected_subsets):
-            plt.scatter([element_positions[element] for element in subset], [subset_idx + 1] * len(subset), 
+            plt.scatter([element_positions[element] for element in subset], [subset_idx + 1] * len(subset),
                         label=f'Selected Subset {subset_idx + 1}', s=100, marker='o', edgecolor='black')
 
         # Plot the unselected subsets
         unselected_subsets = [subset for subset in all_subsets if subset not in selected_subsets]
         for subset_idx, subset in enumerate(unselected_subsets):
-            plt.scatter([element_positions[element] for element in subset], [subset_idx + len(selected_subsets) + 1] * len(subset), 
+            plt.scatter([element_positions[element] for element in subset], [subset_idx + len(selected_subsets) + 1] * len(subset),
                         label=f'Unselected Subset {subset_idx + 1}', s=100, marker='o', edgecolor='black', facecolor='none')
 
         # Add annotations and labels
         y_labels = ['Universal Set'] + [f'Selected Subset {i + 1}' for i in range(len(selected_subsets))] + \
-                [f'Unselected Subset {i + 1}' for i in range(len(unselected_subsets))]
+                   [f'Unselected Subset {i + 1}' for i in range(len(unselected_subsets))]
         plt.yticks(range(len(y_labels)), y_labels)
         plt.xlabel('Elements')
         plt.title('Set Covering Problem Solution')
@@ -128,7 +129,6 @@ class SCPEvaluation(Evaluation):
         plt.grid(True, axis='x')
         plt.tight_layout()
         plt.show()
-
 
     def cover_subsets(self, universal_set: List[int], subsets: List[List[int]], eva: Callable) -> Tuple[int, List[List[int]]]:
         """
@@ -188,8 +188,8 @@ class SCPEvaluation(Evaluation):
         average_subsets = total_subsets / self.n_instance
         return -average_subsets  # Negative because we want to minimize the number of subsets
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     def select_next_subset(selected_subsets: List[List[int]], remaining_subsets: List[List[int]], remaining_elements: List[int]) -> List[int] | None:
         """
@@ -216,7 +216,6 @@ if __name__ == '__main__':
         return best_subset
 
 
-
     bp1d = SCPEvaluation()
-    ave_bins = bp1d.evaluate_program('_',select_next_subset)
+    ave_bins = bp1d.evaluate_program('_', select_next_subset)
     print(ave_bins)

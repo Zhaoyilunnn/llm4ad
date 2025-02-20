@@ -45,16 +45,17 @@ from llm4ad.task.optimization.bp_1d_construct.template import template_program, 
 
 __all__ = ['BP1DEvaluation']
 
+
 class BP1DEvaluation(Evaluation):
     """Evaluator for the 1D Bin Packing Problem."""
 
-    def __init__(self, 
-                timeout_seconds: int = 60,
-                n_bins: int = 500,
-                n_instance: int  = 8,
-                n_items: int = 500,
-                bin_capacity: int = 100,
-                **kwargs):
+    def __init__(self,
+                 timeout_seconds: int = 60,
+                 n_bins: int = 500,
+                 n_instance: int = 8,
+                 n_items: int = 500,
+                 bin_capacity: int = 100,
+                 **kwargs):
         """
         Args:
             n_bins: The number of available bins at the beginning.
@@ -86,7 +87,7 @@ class BP1DEvaluation(Evaluation):
         # Create a bar plot for each bin
         for i, bin_content in enumerate(bins):
             # Calculate the cumulative sum of item weights for stacking
-            cumulative_weights = [sum(bin_content[:j+1]) for j in range(len(bin_content))]
+            cumulative_weights = [sum(bin_content[:j + 1]) for j in range(len(bin_content))]
             # Plot the bin as a bar, with items stacked
             ax.bar(i, cumulative_weights[-1] if cumulative_weights else 0, color='lightblue', edgecolor='black')
             # Plot individual items as stacked segments
@@ -98,7 +99,7 @@ class BP1DEvaluation(Evaluation):
         ax.set_ylabel('Weight')
         ax.set_title(f'1D Bin Packing Solution (Bin Capacity: {bin_capacity})')
         ax.set_xticks(range(len(bins)))
-        ax.set_xticklabels([f'Bin {i+1}' for i in range(len(bins))])
+        ax.set_xticklabels([f'Bin {i + 1}' for i in range(len(bins))])
         ax.axhline(bin_capacity, color='red', linestyle='--', label='Bin Capacity')
 
         # Add a legend
@@ -143,16 +144,16 @@ class BP1DEvaluation(Evaluation):
             else:
                 # If no feasible bin is found, stop packing (no more bins available)
                 break
-        
+
             if remaining_capacities[selected_bin] < 0:
                 return None
 
             # Remove the selected item from the remaining items
             remaining_items.remove(selected_item)
 
-        if len(remaining_items)>0:
+        if len(remaining_items) > 0:
             return None
-        
+
         # Calculate the number of bins used (bins that contain at least one item)
         used_bins = sum(1 for bin_content in bins if bin_content)
 
@@ -187,7 +188,6 @@ class BP1DEvaluation(Evaluation):
 
 if __name__ == '__main__':
 
-
     def determine_next_assignment(remaining_items: List[int], remaining_capacities: List[int]) -> Tuple[int, int | None]:
         """
         Determine the next item and bin to pack based on a greedy heuristic.
@@ -209,7 +209,6 @@ if __name__ == '__main__':
         return remaining_items[0], None  # If no feasible bin is found, return the first item and no bin
 
 
-
     bp1d = BP1DEvaluation()
-    ave_bins = bp1d.evaluate_program('_',determine_next_assignment)
+    ave_bins = bp1d.evaluate_program('_', determine_next_assignment)
     print(ave_bins)

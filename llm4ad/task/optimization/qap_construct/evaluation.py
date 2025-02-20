@@ -41,14 +41,15 @@ from llm4ad.task.optimization.qap_construct.template import template_program, ta
 
 __all__ = ['QAPEvaluation']
 
+
 class QAPEvaluation(Evaluation):
     """Evaluator for the Quadratic Assignment Problem."""
 
-    def __init__(self, 
-                timeout_seconds=20,
-                n_facilities = 50,
-                n_instance = 16,
-                **kwargs):
+    def __init__(self,
+                 timeout_seconds=20,
+                 n_facilities=50,
+                 n_instance=16,
+                 **kwargs):
         """
         Initializes the QAP evaluator.
         """
@@ -123,7 +124,6 @@ class QAPEvaluation(Evaluation):
         plt.grid(True)
         plt.show()
 
-
     def qap_evaluate(self, current_assignment: List[int], flow_matrix: np.ndarray, distance_matrix: np.ndarray, eva: Callable) -> List[int]:
         """
         Evaluate the next assignment for the Quadratic Assignment Problem using a constructive heuristic.
@@ -142,7 +142,7 @@ class QAPEvaluation(Evaluation):
         n_facilities = flow_matrix.shape[0]
         for _ in range(n_facilities):
             next_assignment = eva(current_assignment, flow_matrix, distance_matrix)
-        
+
         return next_assignment
 
     def evaluate_qap(self, eva: Callable) -> float:
@@ -172,21 +172,19 @@ class QAPEvaluation(Evaluation):
                 raise ValueError("Feasibility check failed: Assignment values are out of range.")
             if len(set(current_assignment)) != n_facilities:
                 raise ValueError("Feasibility check failed: Duplicate assignment values found.")
-            
+
             # Calculate the total cost of the assignment
             cost = 0
             for i in range(n_facilities):
                 for j in range(n_facilities):
                     cost += flow_matrix[i, j] * distance_matrix[current_assignment[i], current_assignment[j]]
             total_cost += cost
-        
+
         average_cost = total_cost / self.n_instance
         return -average_cost  # We want to minimize the total cost
 
 
-
 if __name__ == '__main__':
-
 
     def select_next_assignment(current_assignment: List[int], flow_matrix: np.ndarray, distance_matrix: np.ndarray) -> List[int]:
         """
@@ -201,7 +199,7 @@ if __name__ == '__main__':
             Updated assignment of facilities to locations.
         """
         n_facilities = len(current_assignment)
-        
+
         # Find the first unassigned facility and the first available location
         for facility in range(n_facilities):
             if current_assignment[facility] == -1:
@@ -211,11 +209,10 @@ if __name__ == '__main__':
                         current_assignment[facility] = location
                         break
                 break
-        
+
         return current_assignment
 
 
-
     bp1d = QAPEvaluation()
-    ave_bins = bp1d.evaluate_program('_',select_next_assignment)
+    ave_bins = bp1d.evaluate_program('_', select_next_assignment)
     print(ave_bins)

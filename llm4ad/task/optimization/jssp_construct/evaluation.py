@@ -44,14 +44,15 @@ from llm4ad.task.optimization.jssp_construct.template import template_program, t
 
 __all__ = ['JSSPEvaluation']
 
+
 class JSSPEvaluation(Evaluation):
     """Evaluator for Job Shop Scheduling Problem."""
 
-    def __init__(self, 
+    def __init__(self,
                  timeout_seconds=20,
-                 n_instance = 16,
-                 n_jobs = 50,
-                 n_machines = 10,
+                 n_instance=16,
+                 n_jobs=50,
+                 n_machines=10,
                  **kwargs):
         """
         Args:
@@ -76,7 +77,6 @@ class JSSPEvaluation(Evaluation):
     def evaluate_program(self, program_str: str, callable_func: Callable) -> Any | None:
         return self.evaluate(callable_func)
 
-
     def plot_solution(self, schedule: List[List[Tuple[int, int, int]]], n_jobs: int, n_machines: int):
         """
         Plots the schedule as a Gantt chart.
@@ -96,7 +96,7 @@ class JSSPEvaluation(Evaluation):
             for operation in operations:
                 machine, start_time, end_time = operation
                 # Plot the operation as a horizontal bar with a specific color
-                ax.barh(machine, end_time - start_time, left=start_time, 
+                ax.barh(machine, end_time - start_time, left=start_time,
                         color=colors(job_idx), label=f'Job {job_idx}')
 
         # Customize the plot
@@ -114,7 +114,7 @@ class JSSPEvaluation(Evaluation):
         plt.tight_layout()
         plt.show()
 
-    def schedule_jobs(self, processing_times, n_jobs, n_machines,eva):
+    def schedule_jobs(self, processing_times, n_jobs, n_machines, eva):
         """
         Schedule jobs on machines using a greedy constructive heuristic.
 
@@ -146,7 +146,7 @@ class JSSPEvaluation(Evaluation):
                 if job_status[job_id] <= machine_status[machine_id]:
                     feasible_operations.append(operation)
 
-            if len(feasible_operations)==0:
+            if len(feasible_operations) == 0:
                 next_operation = all_operations[0]
             else:
                 # Determine the next operation to schedule
@@ -182,18 +182,17 @@ class JSSPEvaluation(Evaluation):
             The average makespan across all instances.
         """
         makespans = []
-        
+
         for instance in self._datasets[:self.n_instance]:
             processing_times, n1, n2 = instance
-            makespan,solution  = self.schedule_jobs(processing_times, n1, n2,eva)
+            makespan, solution = self.schedule_jobs(processing_times, n1, n2, eva)
             makespans.append(makespan)
-        
+
         average_makespan = np.mean(makespans)
         return -average_makespan  # Negative because we want to minimize the makespan
 
+
 if __name__ == '__main__':
-
-
     def determine_next_operation(current_status, feasible_operations):
         """
         Determine the next operation to schedule based on a greedy heuristic.
@@ -211,5 +210,5 @@ if __name__ == '__main__':
 
 
     tsp = JSSPEvaluation()
-    makespan = tsp.evaluate_program('_',determine_next_operation)
+    makespan = tsp.evaluate_program('_', determine_next_operation)
     print(makespan)

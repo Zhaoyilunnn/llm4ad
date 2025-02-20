@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class GetData:
     def __init__(self, n_instance: int, n_elements: int, n_subsets: int, max_subset_size: int):
         """
@@ -31,7 +32,7 @@ class GetData:
         for _ in range(self.n_instance):
             # Define the universal set
             universal_set = list(range(1, self.n_elements + 1))
-            
+
             # Generate subsets
             subsets = []
             for _ in range(self.n_subsets):

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class GetData:
     def __init__(self, n_instance: int, n_items: int, knapsack_capacity: int):
         """
@@ -29,11 +30,11 @@ class GetData:
 
         for _ in range(self.n_instance):
             # Generate random item weights, ensuring no item exceeds the knapsack capacity
-            item_weights = np.random.randint(10, self.knapsack_capacity/2 + 10, size=self.n_items).tolist()
-            
+            item_weights = np.random.randint(10, self.knapsack_capacity / 2 + 10, size=self.n_items).tolist()
+
             # Generate random item values, ensuring they are positive
             item_values = np.random.randint(1, 101, size=self.n_items).tolist()  # Values between 1 and 100
-            
+
             # Append the instance data as a tuple (weights, values, capacity)
             instance_data.append((item_weights, item_values, self.knapsack_capacity))
 

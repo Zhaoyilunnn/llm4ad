@@ -44,14 +44,15 @@ from llm4ad.task.optimization.online_bin_packing.generate_weibull_instances impo
 
 __all__ = ['OBPEvaluation']
 
+
 class OBPEvaluation(Evaluation):
     """Evaluator for online bin packing problem."""
 
-    def __init__(self, timeout_seconds=30, 
-                n_instances = 5, 
-                n_items = 5000, 
-                capacity = 100,
-                **kwargs):
+    def __init__(self, timeout_seconds=30,
+                 n_instances=5,
+                 n_items=5000,
+                 capacity=100,
+                 **kwargs):
         """
         Args:
             - 'data_file' (str): The data file to load (default is 'weibull_5k_train.pkl').
@@ -152,7 +153,7 @@ class OBPEvaluation(Evaluation):
 
         # Set axis labels and title
         ax.set_yticks(range(len(bins_to_plot)))
-        ax.set_yticklabels([f'Bin {bin_idx+1}' for bin_idx in bins_to_plot])
+        ax.set_yticklabels([f'Bin {bin_idx + 1}' for bin_idx in bins_to_plot])
         ax.set_xlabel('Capacity')
         ax.set_title('1D Online Bin Packing Solution')
 
@@ -169,10 +170,9 @@ class OBPEvaluation(Evaluation):
         """Returns indices of bins in which item can fit."""
         return np.nonzero((bins - item) >= 0)[0]
 
-
     def online_binpack(self,
-            items: tuple[float, ...], bins: np.ndarray, priority: callable
-    ) -> tuple[list[list[float, ...], ...], np.ndarray]:
+                       items: tuple[float, ...], bins: np.ndarray, priority: callable
+                       ) -> tuple[list[list[float, ...], ...], np.ndarray]:
         """Performs online binpacking of `items` into `bins`."""
         # Track which items are added to each bin.
         packing = [[] for _ in bins]
@@ -189,7 +189,6 @@ class OBPEvaluation(Evaluation):
         # Remove unused bins from packing.
         packing = [bin_items for bin_items in packing if bin_items]
         return packing, bins
-
 
     def evaluate(self, priority: callable) -> float:
         """Evaluate heuristic function on a set of online binpacking instances."""
@@ -214,8 +213,8 @@ class OBPEvaluation(Evaluation):
         # across instances (as we want to minimize number of bins).
         return -np.mean(num_bins)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     def priority(item: float, valid_bins: np.ndarray) -> np.ndarray:
         """
         Priority function for the First-Fit Decreasing (FFD) heuristic.
@@ -231,6 +230,7 @@ if __name__ == '__main__':
         priorities = -valid_bins  # Negative because we want to maximize the priority for the smallest remaining capacity
         return priorities
 
+
     obp = OBPEvaluation()
-    ave_bins = obp.evaluate_program('_',priority)
+    ave_bins = obp.evaluate_program('_', priority)
     print(ave_bins)

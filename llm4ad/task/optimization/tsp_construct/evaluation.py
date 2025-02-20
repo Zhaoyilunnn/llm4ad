@@ -45,10 +45,10 @@ __all__ = ['TSPEvaluation']
 class TSPEvaluation(Evaluation):
     """Evaluator for traveling salesman problem."""
 
-    def __init__(self, 
-                 timeout_seconds = 30,
-                 n_instance = 16,
-                 problem_size = 50,
+    def __init__(self,
+                 timeout_seconds=30,
+                 n_instance=16,
+                 problem_size=50,
                  **kwargs):
 
         """
@@ -66,14 +66,14 @@ class TSPEvaluation(Evaluation):
             timeout_seconds=timeout_seconds
         )
 
-        self.n_instance =  n_instance
+        self.n_instance = n_instance
         self.problem_size = problem_size
         getData = GetData(self.n_instance, self.problem_size)
         self._datasets = getData.generate_instances()
 
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
         return self.evaluate(callable_func)
-    
+
     def tour_cost(self, instance, solution, problem_size):
         cost = 0
         for j in range(problem_size - 1):
@@ -128,7 +128,6 @@ class TSPEvaluation(Evaluation):
 
                 route[i] = current_node
 
-
             mask = ~np.isin(np.arange(self.problem_size), route[:self.problem_size - 1])
 
             last_node = np.arange(self.problem_size)[mask]
@@ -153,9 +152,11 @@ class TSPEvaluation(Evaluation):
 
 if __name__ == '__main__':
     import sys
+
     print(sys.path)
 
-    def select_next_node(current_node: int, destination_node: int, unvisited_nodes: np.ndarray, distance_matrix: np.ndarray) -> int: 
+
+    def select_next_node(current_node: int, destination_node: int, unvisited_nodes: np.ndarray, distance_matrix: np.ndarray) -> int:
         """
         Design a novel algorithm to select the next node in each step.
 
@@ -177,6 +178,7 @@ if __name__ == '__main__':
         next_node = unvisited_nodes[next_node_index]
 
         return next_node
-    
+
+
     tsp = TSPEvaluation()
-    tsp.evaluate_program('_',select_next_node)
+    tsp.evaluate_program('_', select_next_node)

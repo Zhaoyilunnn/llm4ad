@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class GetData:
     def __init__(self, n_instance: int, n_items: int, bin_capacity: int):
         """
@@ -29,7 +30,7 @@ class GetData:
         for _ in range(self.n_instance):
             # Parameters for the beta distribution
             alpha = 2  # Shape parameter (adjust as needed)
-            beta = 5   # Shape parameter (adjust as needed)
+            beta = 5  # Shape parameter (adjust as needed)
 
             # Generate random item weights using a beta distribution
             # Scale and shift the values to the range [5, 50]

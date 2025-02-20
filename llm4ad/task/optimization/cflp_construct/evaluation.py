@@ -41,25 +41,25 @@ from typing import Callable, Any, List, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 from llm4ad.base import Evaluation
 from llm4ad.task.optimization.cflp_construct.get_instance import GetData
 from llm4ad.task.optimization.cflp_construct.template import template_program, task_description
 
 __all__ = ['CFLPEvaluation']
 
+
 class CFLPEvaluation(Evaluation):
     """Evaluator for the Capacitated Facility Location Problem."""
 
     def __init__(self,
-                timeout_seconds: int = 60,
-                n_instance: int  = 16,
-                n_facilities: int = 50,
-                n_customers: int = 50,
-                max_capacity: int = 100,
-                max_demand: int = 20,
-                max_cost: int = 50,
-                **kwargs):
+                 timeout_seconds: int = 60,
+                 n_instance: int = 16,
+                 n_facilities: int = 50,
+                 n_customers: int = 50,
+                 max_capacity: int = 100,
+                 max_demand: int = 20,
+                 max_cost: int = 50,
+                 **kwargs):
         """
         Initialize the evaluator.
         """
@@ -81,7 +81,6 @@ class CFLPEvaluation(Evaluation):
 
     def evaluate_program(self, program_str: str, callable_func: Callable) -> Any | None:
         return self.evaluate_cflp(callable_func)
-
 
     def plot_solution(self, facility_capacities: List[int], customer_demands: List[int], assignments: List[List[int]], assignment_costs: List[List[int]]):
         """
@@ -125,7 +124,6 @@ class CFLPEvaluation(Evaluation):
         # Show the plot
         plt.tight_layout()
         plt.show()
-
 
     def assign_customers(self, facility_capacities: List[int], customer_demands: List[int], assignment_costs: List[List[int]], eva: Callable) -> Tuple[int, List[List[int]]]:
         """
@@ -233,5 +231,5 @@ if __name__ == '__main__':
 
 
     bp1d = CFLPEvaluation()
-    ave_bins = bp1d.evaluate_program('_',select_next_assignment)
+    ave_bins = bp1d.evaluate_program('_', select_next_assignment)
     print(ave_bins)

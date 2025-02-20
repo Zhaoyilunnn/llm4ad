@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class GetData:
     def __init__(self, n_instance: int, n_jobs: int, n_machines: int):
         """

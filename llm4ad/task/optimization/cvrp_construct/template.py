@@ -1,4 +1,3 @@
-
 template_program = '''
 import numpy as np
 def select_next_node(current_node: int, depot: int, unvisited_nodes: np.ndarray, rest_capacity: np.ndarray, demands: np.ndarray, distance_matrix: np.ndarray) -> int:
@@ -34,4 +33,3 @@ Given a set of customers and a fleet of vehicles with limited capacity,
 the task is to design a novel algorithm to select the next node in each step,
 with the objective of minimizing the total cost.
 """
-

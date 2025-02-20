@@ -12,6 +12,7 @@ from llm4ad.task.machine_learning.car_mountain.template import template_program,
 
 __all__ = ['CarMountain']
 
+
 def evaluate(env: gym.Env, action_select: callable) -> float:
     """Evaluate heuristic function on car mountain problem."""
 

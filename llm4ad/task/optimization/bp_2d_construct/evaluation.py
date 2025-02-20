@@ -47,17 +47,18 @@ from llm4ad.task.optimization.bp_2d_construct.template import template_program, 
 
 __all__ = ['BP2DEvaluation']
 
+
 class BP2DEvaluation(Evaluation):
     """Evaluator for the 2D Bin Packing Problem."""
 
-    def __init__(self, 
-                timeout_seconds: int = 120,
-                n_bins: int = 100,
-                n_instance: int  = 8,
-                n_items: int = 100,
-                bin_width: int = 100,
-                bin_height: int = 100,
-                **kwargs):
+    def __init__(self,
+                 timeout_seconds: int = 120,
+                 n_bins: int = 100,
+                 n_instance: int = 8,
+                 n_items: int = 100,
+                 bin_width: int = 100,
+                 bin_height: int = 100,
+                 **kwargs):
         """
         Args:
             n_bins: The number of available bins at the beginning.
@@ -123,8 +124,6 @@ class BP2DEvaluation(Evaluation):
 
         plt.tight_layout()
         plt.show()
-
-
 
     def pack_items_2d(self, item_dimensions: List[Tuple[int, int]], bin_dimensions: Tuple[int, int], eva: Callable, n_bins: int) -> Tuple[int, List[List[Tuple[int, int]]]]:
         """
@@ -208,7 +207,6 @@ class BP2DEvaluation(Evaluation):
         used_bins = sum(1 for bin_content in bins if bin_content)
         return used_bins, bins
 
-
     def evaluate_2d(self, eva: Callable) -> float:
         """
         Evaluate the constructive heuristic for the 2D Bin Packing Problem.
@@ -228,7 +226,6 @@ class BP2DEvaluation(Evaluation):
 
         average_bins = total_bins / self.n_instance
         return -average_bins  # Negative because we want to minimize the number of bins
-
 
     def evaluate_program(self, program_str: str, callable_func: Callable) -> Any | None:
         return self.evaluate_2d(callable_func)
@@ -266,6 +263,7 @@ if __name__ == '__main__':
 
         return selected_item, selected_bin
 
+
     bp2d = BP2DEvaluation()
-    ave_bins = bp2d.evaluate_program('_',determine_next_assignment)
+    ave_bins = bp2d.evaluate_program('_', determine_next_assignment)
     print(ave_bins)

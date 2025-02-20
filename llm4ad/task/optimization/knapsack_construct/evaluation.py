@@ -42,14 +42,15 @@ from llm4ad.task.optimization.knapsack_construct.template import template_progra
 
 __all__ = ['KnapsackEvaluation']
 
+
 class KnapsackEvaluation(Evaluation):
     """Evaluator for the Knapsack Problem."""
 
-    def __init__(self, 
+    def __init__(self,
                  timeout_seconds=20,
-                 n_instance = 32,
-                 n_items = 50, 
-                 knapsack_capacity = 100,                
+                 n_instance=32,
+                 n_items=50,
+                 knapsack_capacity=100,
                  **kwargs):
         """
         Initialize the evaluator for the Knapsack Problem.
@@ -69,7 +70,7 @@ class KnapsackEvaluation(Evaluation):
 
     def evaluate_program(self, program_str: str, callable_func: Callable) -> Any | None:
         return self.evaluate(callable_func)
-    
+
     def plot_solution(self, item_weights: list, item_values: list, selected_indices: list, knapsack_capacity: int):
         """
         Plot the solution of the Knapsack problem.
@@ -101,7 +102,6 @@ class KnapsackEvaluation(Evaluation):
         ax.legend()
 
         plt.show()
-
 
     def pack_items(self, item_weights: List[int], item_values: List[int], knapsack_capacity: int, eva: Callable) -> Tuple[int, List[int]]:
         """
@@ -164,7 +164,6 @@ class KnapsackEvaluation(Evaluation):
         return -average_value  # Positive because we want to maximize the total value
 
 
-
 if __name__ == '__main__':
 
     def select_next_item(remaining_capacity: int, remaining_items: List[Tuple[int, int, int]]) -> Tuple[int, int, int] | None:
@@ -190,6 +189,7 @@ if __name__ == '__main__':
                     best_item = item
 
         return best_item
+
 
     bp1d = KnapsackEvaluation()
     ave_bins = bp1d.evaluate_program('_', select_next_item)
