@@ -150,21 +150,32 @@ class MOEAD:
         # register to the population
         self._population.register_function(func)
 
-    def _thread_do_evolutionary_operator(self):
-        def continue_loop():
-            if self._max_generations is None and self._max_sample_nums is None:
+    def _continue_sample(self):
+        """Check if it meets the max_sample_nums restrictions.
+        """
+        if self._max_generations is None and self._max_sample_nums is None:
+            return True
+        if self._max_generations is None and self._max_sample_nums is not None:
+            if self._tot_sample_nums < self._max_sample_nums:
                 return True
+            else:
+                return False
+        if self._max_generations is not None and self._max_sample_nums is None:
+            if self._population.generation < self._max_generations:
+                return True
+            else:
+                return False
+        if self._max_generations is not None and self._max_sample_nums is not None:
             continue_until_reach_gen = False
             continue_until_reach_sample = False
-            if self._max_generations is not None:
-                if self._population.generation < self._max_generations:
-                    continue_until_reach_gen = True
-            if self._max_sample_nums is not None:
-                if self._tot_sample_nums < self._max_sample_nums:
-                    continue_until_reach_sample = True
+            if self._population.generation < self._max_generations:
+                continue_until_reach_gen = True
+            if self._tot_sample_nums < self._max_sample_nums:
+                continue_until_reach_sample = True
             return continue_until_reach_gen and continue_until_reach_sample
 
-        while continue_loop():
+    def _thread_do_evolutionary_operator(self):
+        while self._continue_sample():
             try:
                 for i in range(self._pop_size):
                     crt_pref = self._population._weight_vectors[:, i]
@@ -177,7 +188,7 @@ class MOEAD:
                         input()
 
                     self._sample_evaluate_register(prompt)
-                    if not continue_loop():
+                    if not self._continue_sample():
                         break
 
                     # get a new func using e2
@@ -190,7 +201,7 @@ class MOEAD:
                             input()
 
                         self._sample_evaluate_register(prompt)
-                        if not continue_loop():
+                        if not self._continue_sample():
                             break
 
                     # get a new func using m1
@@ -203,7 +214,7 @@ class MOEAD:
                             input()
 
                         self._sample_evaluate_register(prompt)
-                        if not continue_loop():
+                        if not self._continue_sample():
                             break
 
                     # get a new func using m2
@@ -216,7 +227,7 @@ class MOEAD:
                             input()
 
                         self._sample_evaluate_register(prompt)
-                        if not continue_loop():
+                        if not self._continue_sample():
                             break
             except KeyboardInterrupt:
                 break
@@ -237,6 +248,8 @@ class MOEAD:
         to initialize a population.
         """
         while self._population.generation == 0:
+            if not self._continue_sample():
+                break
             try:
                 # get a new func using i1
                 prompt = MOEADPrompt.get_prompt_i1(self._task_description_str, self._function_to_evolve)
@@ -278,7 +291,6 @@ class MOEAD:
             while len([f for f in self._population if not np.isinf(np.array(f.score)).any()]) < self._selection_num:
                 self._population._generation -= 1
                 self._init_population()
-            print('Initializing population finished')
         # do evolve
         self._do_sample()
 
