@@ -14,8 +14,6 @@
 GUI/outputs
 **/*wandb*
 **/test
-/.git
-/.gitignore
 /.gitattributes
 ysy_main.py
 ysy_main.py
