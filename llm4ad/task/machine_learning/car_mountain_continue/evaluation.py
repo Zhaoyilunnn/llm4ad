@@ -59,7 +59,7 @@ def evaluate(env: gym.Env, action_select: callable) -> float:
             return -(max(0.5 - observation[0], 0) + 1)  # failed
 
 
-class CarMountainContinuous(Evaluation):
+class CarMountainCEvaluation(Evaluation):
     """Evaluator for car mountain problem."""
 
     def __init__(self, max_steps=500, timeout_seconds=20, **kwargs):

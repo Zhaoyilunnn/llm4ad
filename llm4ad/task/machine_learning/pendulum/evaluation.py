@@ -96,7 +96,7 @@ def evaluate_single(env: gym.Env, action_select: callable) -> float:
                 return -fitness
 
 
-class Pendulum(Evaluation):
+class PendulumEvaluation(Evaluation):
     """Evaluator for the pendulum swing-up problem."""
 
     def __init__(self, max_steps=500, timeout_seconds=20, **kwargs):

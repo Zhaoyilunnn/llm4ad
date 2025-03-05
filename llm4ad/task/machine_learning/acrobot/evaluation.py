@@ -73,7 +73,7 @@ def evaluate(env: gym.Env, action_select: callable) -> float:
                 return -fitness
 
 
-class Acrobot(Evaluation):
+class AcrobotEvaluation(Evaluation):
     """Evaluator for car mountain problem."""
 
     def __init__(self, max_steps=500, timeout_seconds=20, **kwargs):
