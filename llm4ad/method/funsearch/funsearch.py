@@ -1,10 +1,27 @@
-# name: str: FunSearch
-# Parameters:
-# max_sample_nums: int: 20
-# samples_per_prompt: int: 4
-# num_samplers: int: 4
-# num_evaluators: int: 4
-# end
+# Module Name: FunSearch
+# Last Revision: 2025/2/16
+# This file is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
+#
+# Reference:
+#   - Bernardino Romera-Paredes, Mohammadamin Barekatain, Alexander Novikov, Matej Balog, M. Pawan Kumar, Emilien Dupont, Francisco JR Ruiz et al. 
+#       "Mathematical discoveries from program search with large language models." 
+#       Nature 625, no. 7995 (2024): 468-475.
+# 
+# ------------------------------- Copyright --------------------------------
+# Copyright (c) 2025 Optima Group.
+# 
+# Permission is granted to use the LLM4AD platform for research purposes. 
+# All publications, software, or other works that utilize this platform 
+# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+# cite the following reference:
+# 
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+# with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+# 
+# For inquiries regarding commercial use or licensing, please contact 
+# http://www.llm4ad.com/contact.html
+# --------------------------------------------------------------------------
 
 from __future__ import annotations
 

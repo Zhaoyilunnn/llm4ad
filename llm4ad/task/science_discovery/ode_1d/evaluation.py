@@ -1,8 +1,3 @@
-# name: str: ODEEvaluation
-# Parameters:
-# test_id (1-16): int: 1
-# timeout_seconds: int: 20
-# end
 from __future__ import annotations
 
 import re
@@ -34,6 +29,7 @@ local_dict = {
     "np.exp": "sp.exp",
 }
 
+
 def evaluate(program_str: str, data: dict, equation: callable) -> float | None:
     """ Evaluate the equation on data observations."""
 
@@ -44,7 +40,7 @@ def evaluate(program_str: str, data: dict, equation: callable) -> float | None:
     num_ini_x_values = len(xs)
     num_variables = len(xs[0])
 
-    try:# initial x(0) = x0
+    try:  # initial x(0) = x0
         # t = sp.symbols('t')  # time variable t
         # x0 = sp.Function('x0')(t)  # x(t) is the unknown formula about t
         # constants = [sp.symbols(f'c{i}') for i in range(MAX_NPARAMS)]  # constants symbol
@@ -77,11 +73,11 @@ def evaluate(program_str: str, data: dict, equation: callable) -> float | None:
 
     # x0_funcs = []
     # for i in range(num_ini_x_values):
-        # solution_with_initial = sp.dsolve(diff_eq, ics={x0.subs(t, 0): xs[i][0]})
-        # x0_solution = solution_with_initial.rhs  # extract the expression of right part
-        # x0_func = sp.lambdify([t, constants], x0_solution, 'numpy')
-        #
-        # x0_funcs.append(x0_func)
+    # solution_with_initial = sp.dsolve(diff_eq, ics={x0.subs(t, 0): xs[i][0]})
+    # x0_solution = solution_with_initial.rhs  # extract the expression of right part
+    # x0_func = sp.lambdify([t, constants], x0_solution, 'numpy')
+    #
+    # x0_funcs.append(x0_func)
 
     loss_partial = lambda params: loss(params)
     result = minimize(loss_partial, [1.0] * MAX_NPARAMS, method='BFGS')
@@ -113,10 +109,10 @@ class ODEEvaluation(Evaluation):
         )
 
         # read files
-        test_eq_dict = strogatz_equations.equations[test_id-1]
+        test_eq_dict = strogatz_equations.equations[test_id - 1]
         dataset = strogatz_extended.data
 
-        dataset = dataset[test_id-1]
+        dataset = dataset[test_id - 1]
         xs = dataset['init']
         t = [e['t'] for e in dataset['solutions'][0]]
         ys = [e['y'][0] for e in dataset['solutions'][0]]  # for only 1 output
@@ -147,6 +143,8 @@ if __name__ == '__main__':
         """
         y = params[0] * np.sin(x) + params[1]
         return y
+
+
     evaluation = ODEEvaluation()
     res = evaluation.evaluate_program('', equation)
     print(res)

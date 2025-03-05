@@ -1,7 +1,3 @@
-# name: str: OscillatorEvaluation2
-# Parameters:
-# timeout_seconds: int: 20
-# end
 from __future__ import annotations
 
 from typing import Any
@@ -47,7 +43,6 @@ def evaluate(data: dict, equation: callable) -> float | None:
 class OscillatorEvaluation2(Evaluation):
 
     def __init__(self, timeout_seconds=20, **kwargs):
-
         super().__init__(
             template_program=template_program,
             task_description=task_description,
@@ -66,6 +61,7 @@ class OscillatorEvaluation2(Evaluation):
     def evaluate_program(self, program_str: str, callable_func: callable) -> Any | None:
         return evaluate(self._datasets, callable_func)
 
+
 if __name__ == '__main__':
     def equation(t: np.ndarray, x: np.ndarray, v: np.ndarray, params: np.ndarray) -> np.ndarray:
         """ Mathematical function for acceleration in a damped nonlinear oscillator
@@ -81,6 +77,7 @@ if __name__ == '__main__':
         """
         dv = params[0] * t + params[1] * x + params[2] * v + + params[3]
         return dv
+
 
     eval = OscillatorEvaluation2()
     res = eval.evaluate_program('', equation)

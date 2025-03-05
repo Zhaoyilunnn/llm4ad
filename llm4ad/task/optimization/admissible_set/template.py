@@ -16,7 +16,9 @@ def priority(el: tuple, n: int, w: int) -> np.array:
     return priorities
 '''
 
-task_description = ("Help me design a novel algorithm to evaluate vectors for potential inclusion in a set. This "
-                    "involves iteratively scoring the priority of adding a vector 'el' to the set based on analysis ("
-                    "like bitwise), with the objective of maximizing the set's size.")
+task_description = """
+Help me design a novel algorithm to evaluate vectors for potential inclusion in a set. 
+This involves iteratively scoring the priority of adding a vector 'el' to the set based on analysis (like bitwise), 
+with the objective of maximizing the set's size.
+"""
 

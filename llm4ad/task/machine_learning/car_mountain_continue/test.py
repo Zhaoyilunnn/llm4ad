@@ -8,6 +8,7 @@ import os
 import pickle
 from queue import Queue
 
+
 def choose_action(pos: float, v: float, last_action: float) -> [float]:
     """Return the action for the car to proceed the next move.
     Args:
@@ -36,6 +37,7 @@ def choose_action(pos: float, v: float, last_action: float) -> [float]:
         return [1]  # Move right towards the target
     else:
         return [0.5]  # Move left away from the target
+
 
 def run_test():
     env = gym.make('MountainCarContinuous-v0', render_mode='human')

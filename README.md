@@ -175,37 +175,44 @@ Check [GUI Introduction](https://llm4ad-doc.readthedocs.io/en/latest/getting_sta
 
 | Methods                                               | Paper title                                                  |
 | ----------------------------------------------------- | ------------------------------------------------------------ |
-| RandomSampling                                        | Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models (PPSN 2024) |
-| FunSearch                                             | Mathematical Discoveries from Program Search with Large Language Models (Nature 2023) |
-| EoH<font color=red>*</font>                           | Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model (ICML 2024) |
-| (1+1)-EPS<font color=red>*</font> <br/>(HillClimbing) | Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models (PPSN 2024) |
+| **AEL** (Preliminary Version of **EoH**)        | [Algorithm Evolution using Large Language Model](https://arxiv.org/abs/2311.15249) (Arxiv 2023) |
+| **EoH**        | [Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model](https://openreview.net/pdf?id=BwAkaxqiLB) (ICML 2024) |
+| **FunSearch**                                             | [Mathematical Discoveries from Program Search with Large Language Models](https://www.nature.com/articles/s41586-023-06924-6) (Nature 2024) |
+| **RandomSampling**                                        | [Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models](https://arxiv.org/abs/2407.10873) (PPSN 2024) |
+| **(1+1)-EPS** <br/>(HillClimbing) | [Understanding the Importance of Evolutionary Search in Automated Heuristic Design with Large Language Models](https://arxiv.org/abs/2407.10873) (PPSN 2024) |
 | RegEvo                                                | coming soon                                                 |
 | Neighborhood search methods                           | coming soon                                                 |
 | Multi-objective search methods                        | coming soon                                                 |
 | Others                                                | coming soon                                                 |
 
-<font color=red>*</font>The implementation has some minor differences from the original method (demonstrated in their original paper), considering generality and multithreading acceleration.
 
 ## 📦LLM4AD Algorithm Design Tasks 
 
 
-| Area              | Algorithm Task                                               | Paper                                             |
-| ----------------- | ------------------------------------------------------------ | ------------------------------------------------- |
-| Optimization      | [Online Bin Packing, Constructive heuristic]                 | [paper](https://openreview.net/pdf?id=BwAkaxqiLB) |
-|                   | [Traveling Salesman Problem (TSP), Construct heuristic](https://llm4ad-doc.readthedocs.io/en/latest/task/optimization/tsp_construct.html) | [paper](https://arxiv.org/pdf/2311.15249)         |
-|                   | Traveling Salesman Problem (TSP), Guided local search        | [paper](https://openreview.net/pdf?id=BwAkaxqiLB) |
-|                   | Flow Shop Scheduling Problem (FSSP), Guided local search     | [paper](https://openreview.net/pdf?id=BwAkaxqiLB) |
-|                   | Bayesian Optimization, Cost-aware Acquisition Function Design | [paper](https://arxiv.org/abs/2404.16906)         |
-| Machine Learning  | Adversarial Attack, Attack strategy                          | [paper](https://arxiv.org/abs/2401.15335)         |
-|                   | [Acrobot, Heuristic (Agent)](https://llm4ad-doc.readthedocs.io/en/latest/task/machine_learning/acrobot.html) |                                                   |
-|                   | [Cart Pole, Heuristic (Agent)](https://llm4ad-doc.readthedocs.io/en/latest/task/machine_learning/car_pole.html) |                                                   |
-|                   | [Mountain Car, Heuristic (Agent)](https://llm4ad-doc.readthedocs.io/en/latest/task/machine_learning/mountain_car.html) |                                                   |
-| Science Discovery | Computational fluid dynamics, Turbulence model design        | [paper](https://arxiv.org/pdf/2410.10657)         |
-|                   | [Bacteria Growth, Function](https://llm4ad-doc.readthedocs.io/en/latest/task/science_discovery/bacteria_grow.html) |                                                   |
-|                   | [Oscillator, Equation](https://llm4ad-doc.readthedocs.io/en/latest/task/science_discovery/oscillator1.html) |                                                   |
-|                   | [Stress & Strain, Equation](https://llm4ad-doc.readthedocs.io/en/latest/task/science_discovery/stress_strain.html) |                                                   |
-| Math              | Admissible Sets                                              | [paper](https://www.nature.com/articles/s41586-023-06924-6)                                                  |
-| coming soon ...   |                                                              |                                                   |
+| Area              | Algorithm Task                                               | Paper                                                       |
+| ----------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
+| Optimization      | [Online Bin Packing, Constructive heuristic]                 | [paper](https://openreview.net/pdf?id=BwAkaxqiLB)           |
+|                   | [Traveling Salesman Problem (TSP), Construct heuristic](https://llm4ad-doc.readthedocs.io/en/latest/task/optimization/tsp_construct.html) | [paper](https://arxiv.org/pdf/2311.15249)                   |
+|                   | Traveling Salesman Problem (TSP), Guided local search        | [paper](https://openreview.net/pdf?id=BwAkaxqiLB)           |
+|                   | 1-dimensional Bin Packing (BP1D), Construct heuristic        | paper                                                       |
+|                   | 2-dimensional Bin Packing (BP2D), Construct heuristic        | paper                                                       |
+|                   | Capacitated Facility Location Problem (CFLP), Construct heuristic | paper                                                       |
+|                   | Knapsack Problem (KP), Construct heuristic                   | paper                                                       |
+|                   | Quadratic Assignment Problem (QAP), Construct heuristic      | paper                                                       |
+|                   | Set Cover Problem (SCP), Construct heuristic                 | paper                                                       |
+|                   | Flow Shop Scheduling Problem (FSSP), Construct heuristic     | paper                                                       |
+|                   | Flow Shop Scheduling Problem (FSSP), Guided local search     | [paper](https://openreview.net/pdf?id=BwAkaxqiLB)           |
+|                   | Bayesian Optimization, Cost-aware Acquisition Function Design | [paper](https://arxiv.org/abs/2404.16906)                   |
+| Machine Learning  | Adversarial Attack, Attack strategy                          | [paper](https://arxiv.org/abs/2401.15335)                   |
+|                   | [Acrobot, Heuristic (Agent)](https://llm4ad-doc.readthedocs.io/en/latest/task/machine_learning/acrobot.html) |                                                             |
+|                   | [Cart Pole, Heuristic (Agent)](https://llm4ad-doc.readthedocs.io/en/latest/task/machine_learning/car_pole.html) |                                                             |
+|                   | [Mountain Car, Heuristic (Agent)](https://llm4ad-doc.readthedocs.io/en/latest/task/machine_learning/mountain_car.html) |                                                             |
+| Science Discovery | Computational fluid dynamics, Turbulence model design        | [paper](https://arxiv.org/pdf/2410.10657)                   |
+|                   | [Bacteria Growth, Function](https://llm4ad-doc.readthedocs.io/en/latest/task/science_discovery/bacteria_grow.html) |                                                             |
+|                   | [Oscillator, Equation](https://llm4ad-doc.readthedocs.io/en/latest/task/science_discovery/oscillator1.html) |                                                             |
+|                   | [Stress & Strain, Equation](https://llm4ad-doc.readthedocs.io/en/latest/task/science_discovery/stress_strain.html) |                                                             |
+| Math              | Admissible Sets                                              | [paper](https://www.nature.com/articles/s41586-023-06924-6) |
+| coming soon ...   |                                                              |                                                             |
 
 
 
@@ -257,7 +264,8 @@ This platform is developed and maintained by LLM4AD developer group from the Cit
 + **Issue:** If you find a bug or you have any kind of concern regarding the correctness, please report us an [issue](https://github.com/Optima-CityU/llm4ad/issues).
 + **Profit Purpose:** If you intend to use LLM4AD for any profit-making purposes, please contact [us](http://www.llm4ad.com/contact.html).
 
-
+## :star: Star Trends
+[![Star History Chart](https://api.star-history.com/svg?repos=Optima-CityU/llm4ad&type=Date)](https://star-history.com/#Optima-CityU/llm4ad&Date)
 
 ## Contact
 
