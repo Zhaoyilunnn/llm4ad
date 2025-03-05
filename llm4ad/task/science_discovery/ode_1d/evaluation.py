@@ -102,7 +102,7 @@ class ODEEvaluation(Evaluation):
         """
         Args:
             timeout_seconds: evaluate time limit.
-            test_id: test equation id ranges from [1, 63].
+            test_id: test equation id ranges from [1, 16].
         """
 
         super().__init__(

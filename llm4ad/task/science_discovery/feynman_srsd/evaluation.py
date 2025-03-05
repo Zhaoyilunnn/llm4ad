@@ -1,8 +1,4 @@
-# name: str: FeynmanEvaluation
-# Parameters:
-# test_id (1-16): int: 1
-# timeout_seconds: int: 20
-# end
+
 from __future__ import annotations
 
 import re
@@ -52,12 +48,12 @@ class FeynmanEvaluation(Evaluation):
         """
         Args:
             timeout_seconds: evaluate time limit.
-            test_id: test equation id ranges from [1, 63].
+            test_id: test equation id ranges from [1, 120].
         """
 
         # read number of variables and rewrite the template
         eq_name = list(FEYNMAN_EQUATION_CLASS_List)
-        self.func = FEYNMAN_EQUATION_CLASS_List[test_id]()
+        self.func = FEYNMAN_EQUATION_CLASS_List[test_id-1]()
         x_len = len(self.func.x)
 
         template_program_temp = template_program.split('\n')
