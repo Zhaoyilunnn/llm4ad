@@ -44,12 +44,13 @@ def func(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     return a + b
 --------------------------------------------------------------------------------------------
 """
+
 from __future__ import annotations
 
 import ast
 import copy
 import dataclasses
-from typing import Any
+from typing import Any, List, Callable
 
 
 @dataclasses.dataclass
@@ -130,6 +131,13 @@ class Program:
     def get_function(self, function_name: str) -> Function:
         index = self.find_function_index(function_name)
         return self.functions[index]
+
+    def exec(self) -> List[Callable]:
+        function_names = [f.name for f in self.functions]
+        g = {}
+        exec(str(self), g)
+        callable_funcs = [g[name] for name in function_names]
+        return callable_funcs
 
 
 class _ProgramVisitor(ast.NodeVisitor):
