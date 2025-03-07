@@ -1,3 +1,36 @@
+# Module Name: OscillatorEvaluation1
+# Last Revision: 2025/3/5
+# Description: Defines a mathematical function skeleton for calculating acceleration
+#              in a damped nonlinear oscillator system with driving force, based on
+#              position, velocity, and parameters to be optimized.
+#              This module is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
+#
+# Parameters:
+#    -   x: np.ndarray - current position observations (default: None).
+#    -   v: np.ndarray - velocity observations (default: None).
+#    -   params: np.ndarray - array of numeric constants or parameters to optimize (default: None).
+#
+# References:
+#   - Shojaee, Parshin, et al. "Llm-sr: Scientific equation discovery via programming
+#       with large language models." arXiv preprint arXiv:2404.18400 (2024).
+#
+# ------------------------------- Copyright --------------------------------
+# Copyright (c) 2025 Optima Group.
+#
+# Permission is granted to use the LLM4AD platform for research purposes.
+# All publications, software, or other works that utilize this platform
+# or any part of its codebase must acknowledge the use of "LLM4AD" and
+# cite the following reference:
+#
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang,
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design
+# with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+#
+# For inquiries regarding commercial use or licensing, please contact
+# http://www.llm4ad.com/contact.html
+# --------------------------------------------------------------------------
+
+
 from __future__ import annotations
 
 from typing import Any
