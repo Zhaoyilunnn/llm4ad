@@ -8,6 +8,5 @@ tensorboard
 wandb
 pytz
 pandas
-gym
 matplotlib
 ttkbootstrap
