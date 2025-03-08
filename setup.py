@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 setup(
     name='llm4ad',
     version='1.0',
-    author='LLM4AD Team',
+    author='LLM4AD Developers',
     description='Large Language Model for Algorithm Design Platform ',
     packages=find_packages(),
     package_dir={'': '.'},
