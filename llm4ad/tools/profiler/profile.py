@@ -43,7 +43,7 @@ class ProfilerBase:
                  evaluation_name='Problem',
                  method_name='Method',
                  initial_num_samples=0,
-                 log_style=Literal['simple', 'complex'],
+                 log_style: Literal['simple', 'complex'] = 'complex',
                  create_random_path=False,
                  **kwargs):
         """Base profiler for recording experimental results.
