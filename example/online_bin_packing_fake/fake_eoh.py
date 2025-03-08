@@ -36,10 +36,10 @@ if __name__ == '__main__':
         llm=FakeLLM(),
         profiler=EoHProfiler(log_dir='logs/eoh', log_style='simple'),
         evaluation=task,
-        max_sample_nums=10,
-        max_generations=10,
-        pop_size=2,
+        max_sample_nums=1000,
+        max_generations=100,
+        pop_size=20,
         num_samplers=1,
-        num_evaluators=1,
+        num_evaluators=4,
     )
     method.run()

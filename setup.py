@@ -26,7 +26,7 @@ setup(
     description='Large Language Model for Algorithm Design Platform ',
     packages=find_packages(),  
     package_dir={'': '.'}, 
-    python_requires='>=3.9,<=3.11',
+    python_requires='>=3.9',
     install_requires=[
         'numpy<2',
         'tensorboard',
@@ -37,7 +37,6 @@ setup(
         'pytz',
         'matplotlib',
         'python-docx',
-        'gym',
         'ttkbootstrap'
     ]
 )
