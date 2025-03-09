@@ -32,7 +32,7 @@ if __name__ == '__main__':
     task = OBPEvaluation()
     rand_sample = RandSample(
         llm=llm,
-        profiler=ProfilerBase(log_dir='logs/randomsample'),
+        profiler=ProfilerBase(log_dir='logs/randomsample', log_style='simple'),
         evaluation=task,
         max_sample_nums=10,
         num_samplers=1,

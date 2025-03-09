@@ -87,9 +87,6 @@ class RandSample:
         self._evaluator = SecureEvaluator(evaluation, debug_mode=debug_mode, **kwargs)
         self._profiler = profiler
 
-        if profiler is not None:
-            self._profiler.record_parameters(llm, evaluation, self)  # ZL: Necessary
-
         # statistics
         self._tot_sample_nums = 0
 
@@ -111,6 +108,10 @@ class RandSample:
 
         # self.prompt
         self._prompt_content = self._get_prompt()
+
+        # pass parameters to profiler
+        if profiler is not None:
+            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
 
     def _get_prompt(self) -> str:
         template = copy.deepcopy(self._template_program)

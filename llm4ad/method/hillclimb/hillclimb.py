@@ -88,9 +88,6 @@ class HillClimb:
         self._evaluator = SecureEvaluator(evaluation, debug_mode=debug_mode, **kwargs)
         self._profiler = profiler
 
-        if profiler is not None:
-            self._profiler.record_parameters(llm, evaluation, self)  # ZL: Necessary
-
         # statistics
         self._tot_sample_nums = 0
         self._best_function_found = self._function_to_evolve  # set to the template function at the beginning
@@ -110,6 +107,10 @@ class HillClimb:
         self._sampler_threads = [
             Thread(target=self._sample_evaluate_register) for _ in range(self._num_samplers)
         ]
+
+        # pass parameters to profiler
+        if profiler is not None:
+            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
 
     def _init(self):
         # evaluate the template program, make sure the score of which is not 'None'

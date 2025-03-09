@@ -97,9 +97,6 @@ class FunSearch:
         self._evaluator = SecureEvaluator(evaluation, debug_mode=debug_mode, **kwargs)
         self._profiler = profiler
 
-        if profiler is not None:
-            self._profiler.record_parameters(llm, evaluation, self)  # ZL: Necessary
-
         # statistics
         self._tot_sample_nums = 0
 
@@ -118,6 +115,10 @@ class FunSearch:
         self._sampler_threads = [
             Thread(target=self._sample_evaluate_register) for _ in range(self._num_samplers)
         ]
+
+        # pass parameters to profiler
+        if profiler is not None:
+            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
 
     def _sample_evaluate_register(self):
         while (self._max_sample_nums is None) or (self._tot_sample_nums < self._max_sample_nums):

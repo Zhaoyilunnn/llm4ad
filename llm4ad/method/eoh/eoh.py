@@ -99,6 +99,7 @@ class EoH:
         self._resume_mode = resume_mode
         self._initial_sample_nums_max = initial_sample_nums_max
         self._debug_mode = debug_mode
+        llm.debug_mode = debug_mode
         self._multi_thread_or_process_eval = multi_thread_or_process_eval
 
         # function to be evolved
@@ -106,18 +107,22 @@ class EoH:
         self._function_to_evolve_name: str = self._function_to_evolve.name
         self._template_program: Program = TextFunctionProgramConverter.text_to_program(self._template_program_str)
 
+        # adjust population size
+        self._adjust_pop_size()
+
         # population, sampler, and evaluator
         self._population = Population(pop_size=self._pop_size)
-        llm.debug_mode = debug_mode
         self._sampler = EoHSampler(llm, self._template_program_str)
         self._evaluator = SecureEvaluator(evaluation, debug_mode=debug_mode, **kwargs)
         self._profiler = profiler
 
-        if profiler is not None:
-            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
-
         # statistics
         self._tot_sample_nums = 0
+        # reset _initial_sample_nums_max
+        self._initial_sample_nums_max = max(
+            self._initial_sample_nums_max,
+            2 * self._pop_size
+        )
 
         # multi-thread executor for evaluation
         assert multi_thread_or_process_eval in ['thread', 'process']
@@ -130,13 +135,9 @@ class EoH:
                 max_workers=num_evaluators
             )
 
-        # reset _initial_sample_nums_max
-        self._initial_sample_nums_max = max(
-            self._initial_sample_nums_max,
-            2 * pop_size if pop_size is not None else 0
-        )
-        # adjust population size
-        self._adjust_pop_size()
+        # pass parameters to profiler
+        if profiler is not None:
+            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
 
     def _adjust_pop_size(self):
         # adjust population size
