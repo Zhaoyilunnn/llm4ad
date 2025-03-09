@@ -48,7 +48,7 @@ class EoH:
                  profiler: ProfilerBase = None,
                  max_generations: Optional[int] = 10,
                  max_sample_nums: Optional[int] = 100,
-                 pop_size: Optional[int] = None,
+                 pop_size: Optional[int] = 5,
                  selection_num=2,
                  use_e2_operator: bool = True,
                  use_m1_operator: bool = True,
@@ -201,21 +201,19 @@ class EoH:
         # register to the population
         self._population.register_function(func)
 
-    def _thread_do_evolutionary_operator(self):
-        def continue_loop():
-            if self._max_generations is None and self._max_sample_nums is None:
-                return True
-            continue_until_reach_gen = False
-            continue_until_reach_sample = False
-            if self._max_generations is not None:
-                if self._population.generation < self._max_generations:
-                    continue_until_reach_gen = True
-            if self._max_sample_nums is not None:
-                if self._tot_sample_nums < self._max_sample_nums:
-                    continue_until_reach_sample = True
-            return continue_until_reach_gen and continue_until_reach_sample
+    def _continue_loop(self) -> bool:
+        if self._max_generations is None and self._max_sample_nums is None:
+            return True
+        elif self._max_generations is not None and self._max_sample_nums is None:
+            return self._population.generation < self._max_generations
+        elif self._max_generations is None and self._max_sample_nums is not None:
+            return self._tot_sample_nums < self._max_sample_nums
+        else:
+            return (self._population.generation < self._max_generations
+                    or self._tot_sample_nums < self._max_sample_nums)
 
-        while continue_loop():
+    def _thread_do_evolutionary_operator(self):
+        while self._continue_loop():
             try:
                 # get a new func using e1
                 indivs = [self._population.selection() for _ in range(self._selection_num)]
@@ -223,7 +221,7 @@ class EoH:
                 if self._debug_mode:
                     print(f'E1 Prompt: {prompt}')
                 self._sample_evaluate_register(prompt)
-                if not continue_loop():
+                if not self._continue_loop():
                     break
 
                 # get a new func using e2
@@ -233,7 +231,7 @@ class EoH:
                     if self._debug_mode:
                         print(f'E2 Prompt: {prompt}')
                     self._sample_evaluate_register(prompt)
-                    if not continue_loop():
+                    if not self._continue_loop():
                         break
 
                 # get a new func using m1
@@ -243,19 +241,17 @@ class EoH:
                     if self._debug_mode:
                         print(f'M1 Prompt: {prompt}')
                     self._sample_evaluate_register(prompt)
-                    if not continue_loop():
+                    if not self._continue_loop():
                         break
 
                 # get a new func using m2
                 if self._use_m2_operator:
                     indiv = self._population.selection()
                     prompt = EoHPrompt.get_prompt_m2(self._task_description_str, indiv, self._function_to_evolve)
-
                     if self._debug_mode:
                         print(f'M2 Prompt: {prompt}')
-
                     self._sample_evaluate_register(prompt)
-                    if not continue_loop():
+                    if not self._continue_loop():
                         break
             except KeyboardInterrupt:
                 break
