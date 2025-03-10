@@ -31,6 +31,7 @@ setup(
         'numpy<2',
         'torch',
         'tensorboardX',
+        'wandb',
         'scipy',
         'tqdm',
         'numba',

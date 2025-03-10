@@ -109,12 +109,10 @@ def main_gui(llm: dict,
 
     llm_case = llm_case(**llm_params)
     eval_case = eval_case(**evaluation_params)
-
     method_case = method_case(llm=llm_case,
                               profiler=profiler,
                               evaluation=eval_case,
                               **method_params)
-
     method_case.run()
 
 

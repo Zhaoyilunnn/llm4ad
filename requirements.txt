@@ -10,3 +10,4 @@ pytz
 pandas
 matplotlib
 ttkbootstrap
+gym
