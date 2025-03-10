@@ -305,6 +305,12 @@ class EoH:
         if not self._resume_mode:
             # do initialization
             self._multi_threaded_sampling(self._iteratively_init_population)
+            # terminate searching if
+            if len(self._population) < self._selection_num:
+                print(f'The search is terminated since EoH unable to obtain {self._selection_num} feasible algorithms during initialization. '
+                      f'Please increase the `initial_sample_nums_max` argument (currently {self._initial_sample_nums_max}). '
+                      f'Please also check your evaluation implementation and LLM implementation.')
+                return
         # evolutionary search
         self._multi_threaded_sampling(self._iteratively_use_eoh_operator)
         # finish
