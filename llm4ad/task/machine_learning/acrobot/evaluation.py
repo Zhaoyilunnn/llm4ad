@@ -90,7 +90,7 @@ class AcrobotEvaluation(Evaluation):
             template_program=template_program,
             task_description=task_description,
             use_numba_accelerate=False,
-            timeout_seconds=20
+            timeout_seconds=timeout_seconds
         )
 
         self.env = None
