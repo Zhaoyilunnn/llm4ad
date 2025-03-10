@@ -169,7 +169,7 @@ class EoH:
 
     def _sample_evaluate_register(self, prompt):
         """Perform following steps:
-        1. Sample a algorithm using the given prompt.
+        1. Sample an algorithm using the given prompt.
         2. Evaluate it by submitting to the process/thread pool, and get the results.
         3. Add the function to the population and register it to the profiler.
         """
