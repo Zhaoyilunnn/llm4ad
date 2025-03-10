@@ -26,7 +26,7 @@ class EoHProfiler(ProfilerBase):
                  method_name='EoH',
                  initial_num_samples=0,
                  log_style='complex',
-                 create_random_path=False,
+                 create_random_path=True,
                  **kwargs):
         """EoH Profiler
         Args:
@@ -121,7 +121,7 @@ class EoHTensorboardProfiler(TensorboardProfiler, EoHProfiler):
                  method_name='EoH',
                  initial_num_samples=0,
                  log_style='complex',
-                 create_random_path=False,
+                 create_random_path=True,
                  **kwargs):
         """EoH Profiler for Tensorboard.
         Args:
@@ -172,7 +172,7 @@ class EoHWandbProfiler(WandBProfiler, EoHProfiler):
                  method_name='EoH',
                  initial_num_samples=0,
                  log_style='complex',
-                 create_random_path=False,
+                 create_random_path=True,
                  **kwargs):
         """EoH Profiler for Wandb.
         Args:

@@ -41,7 +41,7 @@ class WandBProfiler(ProfilerBase):
                  method_name='Method',
                  initial_num_samples=0,
                  log_style='complex',
-                 create_random_path=False,
+                 create_random_path=True,
                  **wandb_init_kwargs):
         """
         Args:

@@ -22,7 +22,7 @@ class FunSearchProfiler(ProfilerBase):
                  initial_num_samples=0,
                  program_db_register_interval: int = 100,
                  log_style='complex',
-                 create_random_path=False,
+                 create_random_path=True,
                  **kwargs):
         """FunSearch Profiler.
         Args:
@@ -87,7 +87,7 @@ class FunSearchTensorboardProfiler(TensorboardProfiler, FunSearchProfiler):
             initial_num_samples=0,
             program_db_register_interval: int = 100,
             log_style='complex',
-            create_random_path=False,
+            create_random_path=True,
             **kwargs):
         """FunSearch Profiler for Tensorboard.
         Args:
@@ -130,7 +130,7 @@ class FunSearchWandbProfiler(WandBProfiler, FunSearchProfiler):
             initial_num_samples=0,
             program_db_register_interval: int = 100,
             log_style='complex',
-            create_random_path=False,
+            create_random_path=True,
             **kwargs):
         """FunSearch Profiler for Wandb.
         Args:
