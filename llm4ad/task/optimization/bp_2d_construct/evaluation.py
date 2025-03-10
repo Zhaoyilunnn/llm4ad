@@ -2,7 +2,7 @@
 # Last Revision: 2025/2/16
 # Description: Evaluates constructive heuristic for 2-dimensional bin packing problem.
 #               Given a set of bins and items, iteratively assign one item to feasible bins.
-#               Design the optimal heurisic in each iteration to minimize the used bins.
+#               Design the optimal heuristic in each iteration to minimize the used bins.
 #              This module is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
 # 
 # Parameters:
