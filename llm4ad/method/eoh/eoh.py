@@ -212,7 +212,7 @@ class EoH:
             return self._tot_sample_nums < self._max_sample_nums
         else:
             return (self._population.generation < self._max_generations
-                    or self._tot_sample_nums < self._max_sample_nums)
+                    and self._tot_sample_nums < self._max_sample_nums)
 
     def _iteratively_use_eoh_operator(self):
         while self._continue_loop():

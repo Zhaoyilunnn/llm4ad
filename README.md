@@ -67,6 +67,11 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 > [!Important]
 > The Python version **must** be larger or equal to Python 3.9.
 
+> [!Important]
+> If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
+> Please note that the gym version may be conflict with your own Python environment, please refer to gym's docs to obtain appropriate version.
+
+
 - refer to [requirements.txt](./requirements.txt)
 
 - Numba (if you want to use Numba accelerate)
