@@ -108,7 +108,7 @@ class ProfilerBase:
     def resume(self, *args, **kwargs):
         pass
 
-    def _write_json(self, function: Function, *, record_type=Literal['history', 'best'], record_sep=200):
+    def _write_json(self, function: Function, *, record_type: Literal['history', 'best'] = 'history', record_sep=200):
         """Write function data to a JSON file.
         Args:
             function   : The function object containing score and string representation.
