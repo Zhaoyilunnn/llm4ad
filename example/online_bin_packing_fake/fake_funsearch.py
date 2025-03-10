@@ -36,8 +36,8 @@ if __name__ == '__main__':
         llm=FakeLLM(),
         profiler=FunSearchProfiler(log_dir='logs/funsearch', log_style='simple', program_db_register_interval=50),
         evaluation=task,
-        max_sample_nums=10,
-        num_samplers=1,
-        num_evaluators=1,
+        max_sample_nums=1000,
+        num_samplers=16,
+        num_evaluators=8,
     )
     method.run()
