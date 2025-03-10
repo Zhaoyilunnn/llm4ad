@@ -66,8 +66,10 @@ class EoH:
             llm             : an instance of 'llm4ad.base.LLM', which provides the way to query LLM.
             evaluation      : an instance of 'llm4ad.base.Evaluator', which defines the way to calculate the score of a generated function.
             profiler        : an instance of 'llm4ad.method.eoh.EoHProfiler'. If you do not want to use it, you can pass a 'None'.
-            max_generations : terminate after evolving 'max_generations' generations or reach 'max_sample_nums'.
-            max_sample_nums : terminate after evaluating max_sample_nums functions (no matter the function is valid or not) or reach 'max_generations'.
+            max_generations : terminate after evolving 'max_generations' generations or reach 'max_sample_nums',
+                              pass 'None' to disable this termination condition.
+            max_sample_nums : terminate after evaluating max_sample_nums functions (no matter the function is valid or not) or reach 'max_generations',
+                              pass 'None' to disable this termination condition.
             pop_size        : population size, if set to 'None', EoH will automatically adjust this parameter.
             selection_num   : number of selected individuals while crossover.
             use_e2_operator : if use e2 operator.
