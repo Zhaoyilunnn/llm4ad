@@ -19,25 +19,22 @@
 
 from __future__ import annotations
 
-import json
-import os
-from threading import Lock
+import sys
 from typing import Optional
 
 from llm4ad.base import Function
 from llm4ad.tools.profiler.profile import ProfilerBase
 
 try:
-    os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable TF onednn for better performance
-    from torch.utils.tensorboard import SummaryWriter
+    import wandb
 except:
     pass
 
 
-class TensorboardProfiler(ProfilerBase):
-    # _num_samples = 0
+class WandBProfiler(ProfilerBase):
 
     def __init__(self,
+                 wandb_project_name: str,
                  log_dir: Optional[str] = None,
                  *,
                  evaluation_name='Problem',
@@ -45,9 +42,10 @@ class TensorboardProfiler(ProfilerBase):
                  initial_num_samples=0,
                  log_style='complex',
                  create_random_path=True,
-                 **kwargs):
-        """Base profiler for recording experimental results.
+                 **wandb_init_kwargs):
+        """
         Args:
+            wandb_project_name : the project name in which you sync your results.
             log_dir            : the directory of current run
             evaluation_name    : the name of the evaluation instance (the name of the problem to be solved).
             method_name        : the name of the search method.
@@ -60,15 +58,29 @@ class TensorboardProfiler(ProfilerBase):
                          initial_num_samples=initial_num_samples,
                          log_style=log_style,
                          create_random_path=create_random_path,
-                         **kwargs)
+                         **wandb_init_kwargs)
 
-        # summary writer instance for Tensorboard
-        if log_dir:
-            self._writer = SummaryWriter(log_dir=self._log_dir)
+        self._wandb_project_name = wandb_project_name
 
+        # for MacOS and Linux
+        if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
+            setting = wandb.Settings(start_method='fork')
+            self._logger_wandb = wandb.init(
+                project=self._wandb_project_name,
+                dir=self._log_dir,
+                settings=setting,
+                **wandb_init_kwargs
+            )
+        else:  # for Windows
+            wandb.setup()
+            self._logger_wandb = wandb.init(
+                project=self._wandb_project_name,
+                dir=self._log_dir,
+                **wandb_init_kwargs
+            )
 
     def get_logger(self):
-        return self._writer
+        return self._logger_wandb
 
     def register_function(self, function: Function, *, resume_mode=False):
         """Record an obtained function. This is a synchronized function.
@@ -77,34 +89,32 @@ class TensorboardProfiler(ProfilerBase):
             self._register_function_lock.acquire()
             self.__class__._num_samples += 1
             self._record_and_print_verbose(function, resume_mode=resume_mode)
-            self._write_tensorboard()
+            self._write_wandb()
             self._write_json(function)
         finally:
             self._register_function_lock.release()
 
-    def finish(self):
-        if self._log_dir:
-            self._writer.close()
-
-    def _write_tensorboard(self, *args, **kwargs):
-        if not self._log_dir:
-            return
-
-        self._writer.add_scalar(
-            'Best Score of Function',
-            self._cur_best_program_score,
-            global_step=self.__class__._num_samples
-        )
-        self._writer.add_scalars(
-            'Legal/Illegal Function',
+    def _write_wandb(self, *args, **kwargs):
+        self._logger_wandb.log(
             {
-                'legal function num': self._evaluate_success_program_num,
-                'illegal function num': self._evaluate_failed_program_num
+                'Best Score of Function': self._cur_best_program_score
             },
-            global_step=self.__class__._num_samples
+            step=self.__class__._num_samples
         )
-        self._writer.add_scalars(
-            'Total Sample/Evaluate Time',
-            {'sample time': self._tot_sample_time, 'evaluate time': self._tot_evaluate_time},
-            global_step=self.__class__._num_samples
+        self._logger_wandb.log(
+            {
+                'Valid Function Num': self._evaluate_success_program_num,
+                'Invalid Function Num': self._evaluate_failed_program_num
+            },
+            step=self.__class__._num_samples
         )
+        self._logger_wandb.log(
+            {
+                'Total Sample Time': self._tot_sample_time,
+                'Total Evaluate Time': self._tot_evaluate_time
+            },
+            step=self.__class__._num_samples
+        )
+
+    def finish(self):
+        wandb.finish()

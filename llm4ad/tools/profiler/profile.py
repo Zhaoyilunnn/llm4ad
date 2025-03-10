@@ -1,7 +1,28 @@
+# This file is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
+# Last Revision: 2025/2/16
+#
+# ------------------------------- Copyright --------------------------------
+# Copyright (c) 2025 Optima Group.
+# 
+# Permission is granted to use the LLM4AD platform for research purposes. 
+# All publications, software, or other works that utilize this platform 
+# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+# cite the following reference:
+# 
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+# with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+# 
+# For inquiries regarding commercial use or licensing, please contact 
+# http://www.llm4ad.com/contact.html
+# --------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import os
 import sys
+from typing import Literal, Optional
+
 import pytz
 import json
 import logging
@@ -13,19 +34,27 @@ from ...base import Function
 
 class ProfilerBase:
     _num_samples = 0
-
-    process_start_time = datetime.now(pytz.timezone("Asia/Shanghai"))
-    result_folder = process_start_time.strftime("%Y%m%d_%H%M%S")
+    _process_start_time = datetime.now(pytz.timezone('Asia/Shanghai'))
+    _result_folder = _process_start_time.strftime('%Y%m%d_%H%M%S')
 
     def __init__(self,
-                 log_dir: str | None = None,
-                 evaluation_name="Problem",
-                 method_name="Method",
+                 log_dir: Optional[str] = None,
+                 *,
+                 evaluation_name='Problem',
+                 method_name='Method',
                  initial_num_samples=0,
-                 log_style='complex',
+                 log_style: Literal['simple', 'complex'] = 'complex',
+                 create_random_path=True,
                  num_objs=1,
                  **kwargs):
-
+        """Base profiler for recording experimental results.
+        Args:
+            log_dir            : the directory of current run
+            evaluation_name    : the name of the evaluation instance (the name of the problem to be solved).
+            method_name        : the name of the search method.
+            initial_num_samples: the sample order start with `initial_num_samples`.
+            create_random_path : create a random log_path according to evaluation_name, method_name, time, ...
+        """
         assert log_style in ['simple', 'complex']
         self._num_objs = num_objs
 
@@ -44,11 +73,16 @@ class ProfilerBase:
         self._method_name = method_name
         self._parameters = None
         self._logger_txt = logging.getLogger('root')
-        self._log_dir = os.path.join(log_dir,
-                                     self.__class__.result_folder + '_' +
-                                     self._evaluation_name + '_' +
-                                     self._method_name)
-        self._log_dir = kwargs.get('final_log_dir', self._log_dir)
+
+        if create_random_path:
+            self._log_dir = os.path.join(
+                log_dir,
+                self.__class__._result_folder + '_' +
+                self._evaluation_name + '_' +
+                self._method_name
+            )
+        else:
+            self._log_dir = log_dir
 
         # lock for multi-thread invoking self.register_function(...)
         self._register_function_lock = Lock()
@@ -58,13 +92,13 @@ class ProfilerBase:
         self._create_log_path()
 
     def register_function(self, function: Function, *, resume_mode=False):
-        """Record an obtained function. This is a synchronized function.
+        """Record an obtained function.
         """
         if self._num_objs < 2:
             try:
                 self._register_function_lock.acquire()
                 self.__class__._num_samples += 1
-                self._record_and_verbose(function, resume_mode=resume_mode)
+                self._record_and_print_verbose(function, resume_mode=resume_mode)
                 self._write_json(function)
             finally:
                 self._register_function_lock.release()
@@ -72,7 +106,7 @@ class ProfilerBase:
             try:
                 self._register_function_lock.acquire()
                 self.__class__._num_samples += 1
-                self._record_and_verbose(function, resume_mode=resume_mode)
+                self._record_and_print_verbose(function, resume_mode=resume_mode)
                 self._write_json(function)
             finally:
                 self._register_function_lock.release()
@@ -87,22 +121,17 @@ class ProfilerBase:
     def resume(self, *args, **kwargs):
         pass
 
-    def _write_json(self, function: Function, *, record_type='history', record_sep=200):
+    def _write_json(self, function: Function, *, record_type: Literal['history', 'best'] = 'history', record_sep=200):
+        """Write function data to a JSON file.
+        Args:
+            function   : The function object containing score and string representation.
+            record_type: Type of record, 'history' or 'best'. Defaults to 'history'.
+            record_sep : Separator for history records. Defaults to 200.
         """
-            Write function data to a JSON file.
-
-            Parameters:
-                function (Function): The function object containing score and string representation.
-                record_type (str, optional): Type of record, 'history' or 'best'. Defaults to 'history'.
-                record_sep (int, optional): Separator for history records. Defaults to 200.
-            """
-        assert record_type in ['history', 'best']
-
         if not self._log_dir:
             return
 
         sample_order = getattr(self.__class__, '_num_samples', 0)
-
         content = {
             'sample_order': sample_order,
             'function': str(function),
@@ -129,7 +158,7 @@ class ProfilerBase:
         with open(path, 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
-    def _record_and_verbose(self, function, *, resume_mode=False):
+    def _record_and_print_verbose(self, function, *, resume_mode=False):
         function_str = str(function).strip('\n')
         sample_time = function.sample_time
         evaluate_time = function.evaluate_time
@@ -198,7 +227,7 @@ class ProfilerBase:
         file_mode = 'a' if os.path.isfile(file_name) else 'w'
 
         self._logger_txt.setLevel(level=logging.INFO)
-        formatter = logging.Formatter("[%(asctime)s] %(filename)s(%(lineno)d) : %(message)s", "%Y-%m-%d %H:%M:%S")
+        formatter = logging.Formatter('[%(asctime)s] %(filename)s(%(lineno)d) : %(message)s', '%Y-%m-%d %H:%M:%S')
 
         for hdlr in self._logger_txt.handlers[:]:
             self._logger_txt.removeHandler(hdlr)
@@ -215,24 +244,28 @@ class ProfilerBase:
         prob = self._parameters[1]
         method = self._parameters[2]
 
-        self._logger_txt.info("==================================LLM Parameters===============================")
-        self._logger_txt.info(f"LLM: {llm.__class__.__name__}")
+        self._logger_txt.info('====================================================================')
+        self._logger_txt.info('LLM Parameters')
+        self._logger_txt.info('--------------------------------------------------------------------')
+        self._logger_txt.info(f'  - LLM: {llm.__class__.__name__}')
         for attr, value in llm.__dict__.items():
             if attr not in ['_functions']:
-                self._logger_txt.info(f"{attr}: {value}")
-
-        self._logger_txt.info("==================================Problem Parameters===============================")
-
-        self._logger_txt.info(f"Problem: {prob.__class__.__name__}")
+                self._logger_txt.info(f'  - {attr}: {value}')
+        self._logger_txt.info('====================================================================')
+        self._logger_txt.info('Problem Parameters')
+        self._logger_txt.info('--------------------------------------------------------------------')
+        self._logger_txt.info(f'  - Problem: {prob.__class__.__name__}')
         for attr, value in prob.__dict__.items():
             if attr not in ['template_program', '_datasets']:
-                self._logger_txt.info(f"{attr}: {value}")
+                self._logger_txt.info(f'  - {attr}: {value}')
 
-        self._logger_txt.info("==================================Method Parameters===============================")
-
-        self._logger_txt.info(f"Method: {method.__class__.__name__}")
+        self._logger_txt.info('====================================================================')
+        self._logger_txt.info('Method Parameters')
+        self._logger_txt.info('--------------------------------------------------------------------')
+        self._logger_txt.info(f'  - Method: {method.__class__.__name__}')
         for attr, value in method.__dict__.items():
-            if attr not in ['llm', '_evaluator', '_profiler', '_template_program_str', '_template_program', '_function_to_evolve', '_population', '_sampler', '_task_description_str']:
-                self._logger_txt.info(f"{attr}: {value}")
+            if attr not in ['llm', '_evaluator', '_profiler', '_template_program_str', '_template_program',
+                            '_function_to_evolve', '_population', '_sampler', '_task_description_str']:
+                self._logger_txt.info(f'  - {attr}: {value}')
 
-        self._logger_txt.info("==================================End of Parameters===============================")
+        self._logger_txt.info('=====================================================================')
