@@ -3,23 +3,23 @@
 # This file is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
 #
 # Reference:
-#   - Fei Liu, Tong Xialiang, Mingxuan Yuan, Xi Lin, Fu Luo, Zhenkun Wang, Zhichao Lu, and Qingfu Zhang. 
-#       "Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model." 
+#   - Fei Liu, Tong Xialiang, Mingxuan Yuan, Xi Lin, Fu Luo, Zhenkun Wang, Zhichao Lu, and Qingfu Zhang.
+#       "Evolution of Heuristics: Towards Efficient Automatic Algorithm Design Using Large Language Model."
 #       In Forty-first International Conference on Machine Learning (ICML). 2024.
 #
 # ------------------------------- Copyright --------------------------------
 # Copyright (c) 2025 Optima Group.
-# 
-# Permission is granted to use the LLM4AD platform for research purposes. 
-# All publications, software, or other works that utilize this platform 
-# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+#
+# Permission is granted to use the LLM4AD platform for research purposes.
+# All publications, software, or other works that utilize this platform
+# or any part of its codebase must acknowledge the use of "LLM4AD" and
 # cite the following reference:
-# 
-# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
-# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+#
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang,
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design
 # with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
-# 
-# For inquiries regarding commercial use or licensing, please contact 
+#
+# For inquiries regarding commercial use or licensing, please contact
 # http://www.llm4ad.com/contact.html
 # --------------------------------------------------------------------------
 
@@ -118,6 +118,7 @@ class EoH:
 
         # statistics
         self._tot_sample_nums = 0
+
         # reset _initial_sample_nums_max
         self._initial_sample_nums_max = max(
             self._initial_sample_nums_max,
@@ -167,27 +168,26 @@ class EoH:
                       f'is not suitable, please reset it to 5.')
 
     def _sample_evaluate_register(self, prompt):
-        """Sample a function using the given prompt -> evaluate it by submitting to the process/thread pool ->
-        add the function to the population and register it to the profiler.
+        """Perform following steps:
+        1. Sample a algorithm using the given prompt.
+        2. Evaluate it by submitting to the process/thread pool, and get the results.
+        3. Add the function to the population and register it to the profiler.
         """
         sample_start = time.time()
         thought, func = self._sampler.get_thought_and_function(prompt)
         sample_time = time.time() - sample_start
         if thought is None or func is None:
             return
-
         # convert to Program instance
         program = TextFunctionProgramConverter.function_to_program(func, self._template_program)
         if program is None:
             return
-
         # evaluate
         score, eval_time = self._evaluation_executor.submit(
             self._evaluator.evaluate_program_record_time,
             program
         ).result()
-
-        # score
+        # register to profiler
         func.score = score
         func.evaluate_time = eval_time
         func.algorithm = thought
@@ -212,7 +212,7 @@ class EoH:
             return (self._population.generation < self._max_generations
                     or self._tot_sample_nums < self._max_sample_nums)
 
-    def _thread_do_evolutionary_operator(self):
+    def _iteratively_use_eoh_operator(self):
         while self._continue_loop():
             try:
                 # get a new func using e1
@@ -267,13 +267,7 @@ class EoH:
         except:
             pass
 
-        # shutdown evaluation_executor
-        try:
-            self._evaluation_executor.shutdown(cancel_futures=True)
-        except:
-            pass
-
-    def _thread_init_population(self):
+    def _iteratively_init_population(self):
         """Let a thread repeat {sample -> evaluate -> register to population}
         to initialize a population.
         """
@@ -291,23 +285,14 @@ class EoH:
                     exit()
                 continue
 
-    def _init_population(self):
+    def _multi_threaded_sampling(self, fn: callable, *args, **kwargs):
+        """Execute `fn` using multithreading.
+        In EoH, `fn` can be `self._iteratively_init_population` or `self._iteratively_use_eoh_operator`.
+        """
         # threads for sampling
         sampler_threads = [
-            Thread(
-                target=self._thread_init_population,
-            ) for _ in range(self._num_samplers)
-        ]
-        for t in sampler_threads:
-            t.start()
-        for t in sampler_threads:
-            t.join()
-
-    def _do_sample(self):
-        sampler_threads = [
-            Thread(
-                target=self._thread_do_evolutionary_operator,
-            ) for _ in range(self._num_samplers)
+            Thread(target=fn, args=args, kwargs=kwargs)
+            for _ in range(self._num_samplers)
         ]
         for t in sampler_threads:
             t.start()
@@ -316,12 +301,10 @@ class EoH:
 
     def run(self):
         if not self._resume_mode:
-            # do init
-            self._init_population()
-
-        # do evolve
-        self._do_sample()
-
+            # do initialization
+            self._multi_threaded_sampling(self._iteratively_init_population)
+        # evolutionary search
+        self._multi_threaded_sampling(self._iteratively_use_eoh_operator)
         # finish
         if self._profiler is not None:
             self._profiler.finish()
