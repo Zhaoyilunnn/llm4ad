@@ -98,7 +98,7 @@ def main_gui(llm: dict,
 
     profiler = profiler_case(evaluation_name=evaluation['name'],
                              method_name=method['name'],
-                             log_dir='logs', log_style='complex', final_log_dir=profiler['log_dir'])
+                             log_dir=profiler['log_dir'], log_style='complex',create_random_path=False, final_log_dir=profiler['log_dir'])
 
     llm.pop('name')
 
