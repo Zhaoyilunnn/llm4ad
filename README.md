@@ -65,7 +65,7 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 ## 🎁 Requirements & Installation
 
 > [!Important]
-> The Python version **must** be larger or equal to Python 3.9.
+> The Python version **must** be larger or equal to Python 3.9, and less than Python 3.13.
 
 > [!Important]
 > If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
