@@ -29,6 +29,7 @@ import concurrent.futures
 import time
 from threading import Thread
 import traceback
+from typing import Optional, Literal
 
 from . import programs_database
 from .config import ProgramsDatabaseConfig
@@ -45,13 +46,13 @@ class FunSearch:
                  num_samplers: int = 4,
                  num_evaluators: int = 4,
                  samples_per_prompt: int = 4,
-                 max_sample_nums: int | None = 20,
+                 max_sample_nums: Optional[int] = 20,
                  *,
                  resume_mode: bool = False,
                  debug_mode: bool = False,
-                 multi_thread_or_process_eval: str = 'thread',
+                 multi_thread_or_process_eval: Literal['thread', 'process'] = 'thread',
                  **kwargs):
-        """
+        """Function Search.
         Args:
             template_program: the seed program (in str) as the initial function of the run.
                 the template_program should be executable, i.e., incorporating package import, and function definition, and function body.
@@ -95,8 +96,6 @@ class FunSearch:
         llm.debug_mode = debug_mode
         self._evaluator = SecureEvaluator(evaluation, debug_mode=debug_mode, **kwargs)
         self._profiler = profiler
-        if profiler is not None:
-            self._profiler.record_parameters(llm, evaluation, self)  # ZL: Necessary
 
         # statistics
         self._tot_sample_nums = 0
@@ -116,6 +115,10 @@ class FunSearch:
         self._sampler_threads = [
             Thread(target=self._sample_evaluate_register) for _ in range(self._num_samplers)
         ]
+
+        # pass parameters to profiler
+        if profiler is not None:
+            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
 
     def _sample_evaluate_register(self):
         while (self._max_sample_nums is None) or (self._tot_sample_nums < self._max_sample_nums):

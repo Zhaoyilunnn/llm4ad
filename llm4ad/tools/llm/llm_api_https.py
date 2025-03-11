@@ -28,7 +28,7 @@ from ...base import LLM
 
 
 class HttpsApi(LLM):
-    def __init__(self, host, key, model, timeout=20, **kwargs):
+    def __init__(self, host, key, model, timeout=60, **kwargs):
         """Https API
         Args:
             host   : host name. please note that the host name does not include 'https://'

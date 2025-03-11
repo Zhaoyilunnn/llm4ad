@@ -23,7 +23,7 @@ import multiprocessing
 import sys
 import time
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Literal
 
 from .code import TextFunctionProgramConverter, Program
 from .modify_code import ModifyCode
@@ -133,7 +133,8 @@ class SecureEvaluator:
                  evaluator: Evaluation,
                  debug_mode=False,
                  *,
-                 fork_proc: str | bool = 'auto'):
+                 fork_proc: Literal['auto', 'default'] | bool = 'auto',
+                 **kwargs):
         assert fork_proc in [True, False, 'auto', 'default']
         self._evaluator = evaluator
         self._debug_mode = debug_mode
