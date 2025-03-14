@@ -88,7 +88,7 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 
   #### Install LLM4AD locally
 
-  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <=3.11
+  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
 
   ```bash
   cd LLM4AD
@@ -98,7 +98,7 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 
   #### Install LLM4AD using PiPy
 
-  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <=3.11
+  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
 
   ```bash
   pip install llm4ad
