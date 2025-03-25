@@ -265,12 +265,14 @@ def problem_type_select(event=None):
 
     problem_listbox = tk.Listbox(problem_frame, height=6, bg='white', selectbackground='lightgray', font=('Comic Sans MS', 12))
     problem_listbox.pack(anchor=tk.NW, fill='both', expand=True, padx=5, pady=5)
-    for _, dict_name, _ in os.walk(f'../llm4ad/task/{objectives_var.get()}'):
-        for name in dict_name:
-            if name != '__pycache__' and name != '_data':
-                problem_listbox.insert(tk.END, name)
-            if name in default_problem:
-                default_problem_index = problem_listbox.size() - 1
+    path = f'../llm4ad/task/{objectives_var.get()}'
+    for name in os.listdir(path):
+        full_path = os.path.join(path, name)
+        if os.path.isdir(full_path) and name != '__pycache__' and name != '_data':
+            problem_listbox.insert(tk.END, name)
+        if name in default_problem:
+            default_problem_index = problem_listbox.size() - 1
+
     problem_listbox.bind("<<ListboxSelect>>", on_problem_select)
     on_problem_select(problem_listbox.select_set(default_problem_index))
 
@@ -683,12 +685,13 @@ if __name__ == '__main__':
     algo_listbox = tk.Listbox(algo_frame, height=6, bg='white', selectbackground='lightgray', font=('Comic Sans MS', 12))
     algo_listbox.pack(anchor=tk.NW, fill='both', expand=True, padx=5, pady=5)
     default_method_index = None
-    for _, dict_name, _ in os.walk('../llm4ad/method'):
-        for name in dict_name:
-            if name != '__pycache__':
-                algo_listbox.insert(tk.END, name)
-            if name == default_method:
-                default_method_index = algo_listbox.size() - 1
+    path = '../llm4ad/method'
+    for name in os.listdir(path):
+        full_path = os.path.join(path, name)
+        if os.path.isdir(full_path) and name != '__pycache__':
+            algo_listbox.insert(tk.END, name)
+        if name == default_method:
+            default_method_index = algo_listbox.size() - 1
 
     algo_listbox.bind("<<ListboxSelect>>", on_algo_select)
     on_algo_select(algo_listbox.select_set(default_method_index))
