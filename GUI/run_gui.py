@@ -73,7 +73,7 @@ default_method = 'eoh'
 default_problem = ['admissible_set', 'car_mountain', 'bactgrow']
 
 log_dir = None
-figures = []
+figures = None
 
 
 ##########################################################
@@ -432,7 +432,7 @@ def get_results(log_dir, max_sample_nums):
                 fig, alg, best_obj = plot_fig(index, log_dir, max_sample_nums)
             except:
                 continue
-            figures.append(fig)
+            figures = fig
             display_plot(index - 1)
             if alg is not None:
                 display_alg(alg)
@@ -528,7 +528,7 @@ def display_plot(index):
     for widget in plot_frame.winfo_children():
         widget.destroy()
 
-    fig = figures[index]
+    fig = figures
 
     canvas = FigureCanvasTkAgg(fig, master=plot_frame)
     canvas.draw()
