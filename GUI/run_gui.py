@@ -360,7 +360,12 @@ def init_fig(max_sample_nums):
     ax.set_ylabel('Current best objective', fontdict=font)
     ax.grid(True)
 
-    ax.set_xticks(np.arange(0, max_sample_nums + 1, 1))
+    if max_sample_nums <= 20:
+        ax.set_xticks(np.arange(0, max_sample_nums + 1, 1))
+    else:
+        ticks = np.linspace(0, max_sample_nums, 11)
+        ticks = np.round(ticks).astype(int)
+        ax.set_xticks(ticks)
 
     canvas = FigureCanvasTkAgg(fig, master=plot_frame)
     canvas.draw()
@@ -526,15 +531,26 @@ def plot_fig(index, log_dir, max_sample_nums):
 
     ax.set_title(f"Result display", fontdict=font)
 
-    ax.plot(generation, best_value_list, color='tab:blue', marker='o')
+    # ax.plot(generation, best_value_list, color='tab:blue', marker='o')
+    ax.plot(generation, best_value_list, color='tab:blue')
     ax.set_xlabel('Samples', fontdict=font)
     ax.set_ylabel('Current best objective', fontdict=font)
     ax.grid(True)
 
     if len(generation) <= max_sample_nums:
-        ax.set_xticks(np.arange(0, max_sample_nums + 1, 1))
+        if max_sample_nums<=20:
+            ax.set_xticks(np.arange(0, max_sample_nums + 1, 1))
+        else:
+            ticks = np.linspace(0, max_sample_nums, 11)
+            ticks = np.round(ticks).astype(int)
+            ax.set_xticks(ticks)
     else:
-        ax.set_xticks(np.arange(0, len(generation) + 1, 1))
+        if len(generation)<=20:
+            ax.set_xticks(np.arange(0, len(generation) + 1, 1))
+        else:
+            ticks = np.linspace(0, len(generation), 11)
+            ticks = np.round(ticks).astype(int)
+            ax.set_xticks(ticks)
 
     ###############################################################
 
