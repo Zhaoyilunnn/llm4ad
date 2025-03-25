@@ -318,6 +318,52 @@ def check_para():
     return True
 
 
+def return_para():
+    llm_para = {}
+    method_para = {}
+    problem_para = {}
+    profiler_para = {}
+
+    ####################
+
+    for i in range(len(llm_para_entry_list)):
+        llm_para[llm_para_value_name_list[i]] = llm_para_entry_list[i].get()
+
+    for i in range(len(method_para_entry_list)):
+        method_para[method_para_value_name_list[i]] = method_para_entry_list[i].get()
+        if method_para_value_type_list[i] == '<class \'int\'>':
+            method_para[method_para_value_name_list[i]] = int(method_para_entry_list[i].get())
+
+    method_para['num_samplers'] = method_para['num_evaluators']
+
+    for i in range(len(problem_para_entry_list)):
+        problem_para[problem_para_value_name_list[i]] = problem_para_entry_list[i].get()
+        if problem_para_value_type_list[i] == '<class \'int\'>':
+            problem_para[problem_para_value_name_list[i]] = int(problem_para_entry_list[i].get())
+
+    ####################
+
+    profiler_para['name'] = 'ProfilerBase'
+
+    temp_str1 = problem_para['name']
+    temp_str2 = method_para['name']
+    process_start_time = datetime.now(pytz.timezone("Asia/Shanghai"))
+    b = os.path.abspath('..')
+    log_folder = b + '/GUI/logs/' + process_start_time.strftime(
+        "%Y%m%d_%H%M%S") + f'_{temp_str1}' + f'_{temp_str2}'
+    profiler_para['log_dir'] = log_folder
+
+    ####################
+
+    print(llm_para)
+    print(method_para)
+    print(problem_para)
+    print(profiler_para)
+
+    return llm_para, method_para, problem_para, profiler_para
+
+######################################################################
+
 def init_fig(max_sample_nums):
     global stop_thread
     global have_stop_thread
@@ -371,52 +417,6 @@ def init_fig(max_sample_nums):
     canvas.draw()
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-
-def return_para():
-    llm_para = {}
-    method_para = {}
-    problem_para = {}
-    profiler_para = {}
-
-    ####################
-
-    for i in range(len(llm_para_entry_list)):
-        llm_para[llm_para_value_name_list[i]] = llm_para_entry_list[i].get()
-
-    for i in range(len(method_para_entry_list)):
-        method_para[method_para_value_name_list[i]] = method_para_entry_list[i].get()
-        if method_para_value_type_list[i] == '<class \'int\'>':
-            method_para[method_para_value_name_list[i]] = int(method_para_entry_list[i].get())
-
-    method_para['num_samplers'] = method_para['num_evaluators']
-
-    for i in range(len(problem_para_entry_list)):
-        problem_para[problem_para_value_name_list[i]] = problem_para_entry_list[i].get()
-        if problem_para_value_type_list[i] == '<class \'int\'>':
-            problem_para[problem_para_value_name_list[i]] = int(problem_para_entry_list[i].get())
-
-    ####################
-
-    profiler_para['name'] = 'ProfilerBase'
-
-    temp_str1 = problem_para['name']
-    temp_str2 = method_para['name']
-    process_start_time = datetime.now(pytz.timezone("Asia/Shanghai"))
-    b = os.path.abspath('..')
-    log_folder = b + '/GUI/logs/' + process_start_time.strftime(
-        "%Y%m%d_%H%M%S") + f'_{temp_str1}' + f'_{temp_str2}'
-    profiler_para['log_dir'] = log_folder
-
-    ####################
-
-    print(llm_para)
-    print(method_para)
-    print(problem_para)
-    print(profiler_para)
-
-    return llm_para, method_para, problem_para, profiler_para
-
-
 def get_results(log_dir, max_sample_nums):
     global figures
     global stop_thread
@@ -450,40 +450,6 @@ def get_results(log_dir, max_sample_nums):
     have_stop_thread = True
     plot_button['state'] = tk.NORMAL
     stop_button['state'] = tk.DISABLED
-
-
-def display_alg(alg):
-    code_display.config(state='normal')
-    code_display.delete(1.0, 'end')
-    code_display.insert(tk.END, alg)
-    code_display.config(state='disabled')
-
-
-def except_error():
-    global process1
-    try:
-        if process1.exitcode == 1:
-            return True
-        else:
-            return False
-    except:
-        return False
-
-
-def check_finish(log_dir, index, max_sample_nums):
-    return os.path.exists(log_dir + '/population/' + 'end.json') or index > max_sample_nums
-
-
-def check(index, log_dir):
-    return_value = False
-    file_name = log_dir + '/samples/samples_0~200.json'
-    if os.path.exists(file_name):
-        with open(file_name) as file:
-            data = json.load(file)
-        if len(data) >= index:
-            return_value = True
-    return return_value
-
 
 def plot_fig(index, log_dir, max_sample_nums):
     ###############################################################
@@ -556,7 +522,6 @@ def plot_fig(index, log_dir, max_sample_nums):
 
     return fig, best_alg, all_best_value
 
-
 def display_plot(index):
     global figures
 
@@ -570,6 +535,41 @@ def display_plot(index):
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     value_label.config(text=f"{index + 1} samples")
+
+######################################################################
+
+def display_alg(alg):
+    code_display.config(state='normal')
+    code_display.delete(1.0, 'end')
+    code_display.insert(tk.END, alg)
+    code_display.config(state='disabled')
+
+
+def except_error():
+    global process1
+    try:
+        if process1.exitcode == 1:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def check_finish(log_dir, index, max_sample_nums):
+    return os.path.exists(log_dir + '/population/' + 'end.json') or index > max_sample_nums
+
+
+def check(index, log_dir):
+    return_value = False
+    file_name = log_dir + '/samples/samples_0~200.json'
+    if os.path.exists(file_name):
+        with open(file_name) as file:
+            data = json.load(file)
+        if len(data) >= index:
+            return_value = True
+    return return_value
+
 
 def stop_run_thread():
     thread_stop = threading.Thread(target=stop_run)
