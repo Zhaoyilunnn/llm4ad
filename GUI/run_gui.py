@@ -74,7 +74,8 @@ default_problem = ['admissible_set', 'car_mountain', 'bactgrow']
 
 log_dir = None
 figures = None
-
+ax = None
+canvas = None
 
 ##########################################################
 
@@ -369,6 +370,9 @@ def init_fig(max_sample_nums):
     global have_stop_thread
     global thread1
     global process1
+    global ax
+    global figures
+    global canvas
 
     stop_run()
     value_label.config(text=f"{0} samples")
@@ -392,10 +396,10 @@ def init_fig(max_sample_nums):
         'size': 16
     }
 
-    fig = plt.Figure(figsize=(4, 3), dpi=100)
-    ax = fig.add_subplot(111)
+    figures = plt.Figure(figsize=(4, 3), dpi=100)
+    ax = figures.add_subplot(111)
 
-    fig.patch.set_facecolor('white')
+    figures.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
     ax.set_title(f"Result Display", fontdict=font)
@@ -413,15 +417,13 @@ def init_fig(max_sample_nums):
         ticks = np.round(ticks).astype(int)
         ax.set_xticks(ticks)
 
-    canvas = FigureCanvasTkAgg(fig, master=plot_frame)
-    canvas.draw()
+    canvas = FigureCanvasTkAgg(figures, master=plot_frame)
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
 def get_results(log_dir, max_sample_nums):
     global figures
     global stop_thread
     global have_stop_thread
-    figures = []
     index = 1
 
     while (not stop_thread) and (not check_finish(log_dir, index, max_sample_nums)) and (not except_error()):
@@ -432,7 +434,6 @@ def get_results(log_dir, max_sample_nums):
                 fig, alg, best_obj = plot_fig(index, log_dir, max_sample_nums)
             except:
                 continue
-            figures = fig
             display_plot(index - 1)
             if alg is not None:
                 display_alg(alg)
@@ -452,6 +453,8 @@ def get_results(log_dir, max_sample_nums):
     stop_button['state'] = tk.DISABLED
 
 def plot_fig(index, log_dir, max_sample_nums):
+    global figures
+    global ax
     ###############################################################
     generation = []
     best_value_list = []
@@ -489,10 +492,7 @@ def plot_fig(index, log_dir, max_sample_nums):
         'size': 16
     }
 
-    fig = plt.Figure(figsize=(4, 3), dpi=100)
-    ax = fig.add_subplot(111)
-
-    fig.patch.set_facecolor('white')
+    figures.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
     ax.set_title(f"Result display", fontdict=font)
@@ -520,19 +520,11 @@ def plot_fig(index, log_dir, max_sample_nums):
 
     ###############################################################
 
-    return fig, best_alg, all_best_value
+    return figures, best_alg, all_best_value
 
 def display_plot(index):
-    global figures
-
-    for widget in plot_frame.winfo_children():
-        widget.destroy()
-
-    fig = figures
-
-    canvas = FigureCanvasTkAgg(fig, master=plot_frame)
+    global canvas
     canvas.draw()
-    canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     value_label.config(text=f"{index + 1} samples")
 
