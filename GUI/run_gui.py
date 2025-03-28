@@ -461,13 +461,15 @@ def plot_fig(index, log_dir, max_sample_nums):
     all_best_value = float('-inf')
     best_alg = None
 
-    file_name = log_dir + '/samples/samples_0~200.json'
+    file_name_list = [log_dir + f'/samples/samples_{i * 200 + 1}~{(i + 1) * 200}.json' for i in range(((index - 1) // 200) + 1)]
 
-    with open(file_name) as file:
-        data = json.load(file)
+    data = []
+    for file_name in file_name_list:
+        with open(file_name) as file:
+            data.append(json.load(file))
 
     for i in range(index):
-        individual = data[i]
+        individual = data[i // 200][((i+1) % 200)-1]
         code = individual['function']
         # alg = individual['algorithm']
         obj = individual['score']
@@ -553,12 +555,14 @@ def check_finish(log_dir, index, max_sample_nums):
 
 
 def check(index, log_dir):
+    temp_var1 = (index - 1) // 200
     return_value = False
-    file_name = log_dir + '/samples/samples_0~200.json'
+    file_name = log_dir + f'/samples/samples_{temp_var1*200+1}~{(temp_var1+1)*200}.json'
+
     if os.path.exists(file_name):
         with open(file_name) as file:
             data = json.load(file)
-        if len(data) >= index:
+        if len(data) >= ((index-1) % 200)+1:
             return_value = True
     return return_value
 
@@ -743,8 +747,8 @@ if __name__ == '__main__':
 
     right_frame.grid_rowconfigure(0, weight=400)
     right_frame.grid_rowconfigure(1, weight=2500)
-    right_frame.grid_columnconfigure(0, weight=400)
-    right_frame.grid_columnconfigure(1, weight=600)
+    right_frame.grid_columnconfigure(0, weight=500)
+    right_frame.grid_columnconfigure(1, weight=500)
 
     ###
 
@@ -761,7 +765,7 @@ if __name__ == '__main__':
 
     code_display_frame = ttk.Labelframe(code_frame, text="Current best algorithm:", bootstyle="dark")
     code_display_frame.pack(anchor=tk.NW, fill=tk.X, padx=5, pady=5)
-    code_display = tk.Text(code_display_frame, height=14, width=70)
+    code_display = tk.Text(code_display_frame, height=14, width=55)
     code_display.pack(fill='both', expand=True, padx=5, pady=5)
     sorting_algorithm = ""
     code_display.insert(tk.END, sorting_algorithm)
