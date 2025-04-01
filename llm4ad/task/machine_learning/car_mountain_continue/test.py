@@ -8,7 +8,6 @@ import os
 import pickle
 from queue import Queue
 
-
 def choose_action(pos: float, v: float, last_action: float) -> [float]:
     """Return the action for the car to proceed the next move.
     Args:

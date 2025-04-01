@@ -30,7 +30,6 @@
 # http://www.llm4ad.com/contact.html
 # --------------------------------------------------------------------------
 
-
 from __future__ import annotations
 
 from typing import Any
@@ -39,6 +38,7 @@ import gym
 from llm4ad.base import Evaluation
 from llm4ad.task.machine_learning.car_mountain_continue.template import template_program, task_description
 
+
 __all__ = ['CarMountainCEvaluation']
 
 
@@ -46,6 +46,7 @@ def evaluate(env: gym.Env, action_select: callable) -> float:
     """Evaluate heuristic function on car mountain problem."""
 
     observation, _ = env.reset()  # initialization
+
     action = 0  # initial action, stay static
 
     for i in range(env._max_episode_steps):
@@ -57,6 +58,7 @@ def evaluate(env: gym.Env, action_select: callable) -> float:
 
         if truncated:
             return -(max(0.5 - observation[0], 0) + 1)  # failed
+
 
 
 class CarMountainCEvaluation(Evaluation):

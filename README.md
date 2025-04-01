@@ -71,6 +71,10 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 > If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
 > Please note that the gym version may be conflict with your own Python environment, please refer to gym's docs to obtain appropriate version.
 
+> [!Important]
+> If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
+> Please note that the gym version may be conflict with your own Python environment, please refer to gym's docs to obtain appropriate version.
+
 
 - refer to [requirements.txt](./requirements.txt)
 

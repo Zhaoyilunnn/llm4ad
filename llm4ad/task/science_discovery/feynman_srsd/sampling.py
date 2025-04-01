@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def default_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
     # x ~ either U(0.1, 10.0) or U(-10.0, -0.1) with 50% chance
     np.random.seed(2025)
@@ -15,7 +14,6 @@ def default_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
     return all_samples
 
 
-
 def default_positive_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
     # x ~ U(0.1, 10.0)
     np.random.seed(2025)
@@ -24,14 +22,12 @@ def default_positive_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
     return 10.0 ** np.random.uniform(log10_min, log10_max, size=sample_size)
 
 
-
 def default_negative_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
     # x ~ U(-10.0, -0.1)
     np.random.seed(2025)
     log10_min = np.log10(abs(min_value))
     log10_max = np.log10(abs(max_value))
     return -10.0 ** np.random.uniform(log10_min, log10_max, size=sample_size)
-
 
 
 def simple_sampling(sample_size, min_value=0.0, max_value=1.0):
@@ -44,7 +40,6 @@ def simple_sampling(sample_size, min_value=0.0, max_value=1.0):
     all_samples = np.concatenate([pos_samples, neg_samples])
     np.random.shuffle(all_samples)
     return all_samples
-
 
 
 def simple_positive_sampling(sample_size, min_value=0.0, max_value=1.0):
@@ -71,7 +66,6 @@ def integer_sampling(sample_size, min_value=1, max_value=100):
     all_samples = np.concatenate([pos_samples, neg_samples])
     np.random.shuffle(all_samples)
     return all_samples
-
 
 
 def integer_positive_sampling(sample_size, min_value=1, max_value=100):

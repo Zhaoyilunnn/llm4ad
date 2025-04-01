@@ -7,7 +7,6 @@ env = gym.make('Pendulum-v1')  # 可选：设置 render_mode='human' 以显示�
 
 # 定义动作选择函数
 def choose_action(x: float, y: float, angular_velocity: float, last_action: float) -> float:
-
     if angular_velocity > 0 and y > 0:
         action = -2.0  # 施加一个负力矩
     elif angular_velocity < 0 and y < 0:
