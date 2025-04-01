@@ -94,6 +94,7 @@ class ProfilerBase:
     def register_function(self, function: Function, *, resume_mode=False):
         """Record an obtained function.
         """
+
         if self._num_objs < 2:
             try:
                 self._register_function_lock.acquire()
@@ -205,6 +206,7 @@ class ProfilerBase:
                         print(f'Sample{self.__class__._num_samples}: Score={score: .3f}     Cur_Best_Score={self._cur_best_program_score: .3f}')
                     else: # TODO: MEoH: only support 2 objs
                         print(f'Sample{self.__class__._num_samples}: Score=[{score[0]: .3f}, {score[1]: .3f}]     Cur_Best_Score=[{self._cur_best_program_score[0]: .3f}, {self._cur_best_program_score[1]: .3f}]')
+
 
         # update statistics about function
         if score is not None:

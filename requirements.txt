@@ -8,8 +8,8 @@ tensorboard
 wandb
 pytz
 pandas
-gym
 matplotlib
 ttkbootstrap
 codebleu
 tree-sitter-python==0.21
+gym

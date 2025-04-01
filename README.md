@@ -65,7 +65,11 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 ## 🎁 Requirements & Installation
 
 > [!Important]
-> The Python version **must** be larger or equal to Python 3.9.
+> The Python version **must** be larger or equal to Python 3.9, and less than Python 3.13.
+
+> [!Important]
+> If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
+> Please note that the gym version may be conflict with your own Python environment, please refer to gym's docs to obtain appropriate version.
 
 > [!Important]
 > If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
@@ -88,7 +92,7 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 
   #### Install LLM4AD locally
 
-  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <=3.11
+  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
 
   ```bash
   cd LLM4AD
@@ -98,7 +102,7 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 
   #### Install LLM4AD using PiPy
 
-  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <=3.11
+  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
 
   ```bash
   pip install llm4ad

@@ -1,9 +1,28 @@
-# name: str: HillClimb
-# Parameters:
-# max_sample_nums: int: 20
-# num_samplers: int: 4
-# num_evaluators: int: 4
-# end
+# Module Name: HillClimb
+# Last Revision: 2025/2/16
+# This file is part of the LLM4AD project (https://github.com/Optima-CityU/llm4ad).
+#
+# Reference:
+#   - Rui Zhang, Fei Liu, Xi Lin, Zhenkun Wang, Zhichao Lu, and Qingfu Zhang. 
+#       "Understanding the importance of evolutionary search in automated heuristic design with large language models." 
+#       In International Conference on Parallel Problem Solving from Nature (PPSN), pp. 185-202. 2024.
+# 
+#
+# ------------------------------- Copyright --------------------------------
+# Copyright (c) 2025 Optima Group.
+# 
+# Permission is granted to use the LLM4AD platform for research purposes. 
+# All publications, software, or other works that utilize this platform 
+# or any part of its codebase must acknowledge the use of "LLM4AD" and 
+# cite the following reference:
+# 
+# Fei Liu, Rui Zhang, Zhuoliang Xie, Rui Sun, Kai Li, Xi Lin, Zhenkun Wang, 
+# Zhichao Lu, and Qingfu Zhang, "LLM4AD: A Platform for Algorithm Design 
+# with Large Language Model," arXiv preprint arXiv:2412.17287 (2024).
+# 
+# For inquiries regarding commercial use or licensing, please contact 
+# http://www.llm4ad.com/contact.html
+# --------------------------------------------------------------------------
 
 from __future__ import annotations
 
@@ -12,6 +31,7 @@ import copy
 import time
 import traceback
 from threading import Thread
+from typing import Literal, Optional
 
 from .profiler import HillClimbProfiler
 from ...base import *
@@ -22,16 +42,15 @@ class HillClimb:
                  llm: LLM,
                  evaluation: Evaluation,
                  profiler: HillClimbProfiler = None,
-                 max_sample_nums: int | None = 20,
+                 max_sample_nums: Optional[int] = 20,
                  num_samplers: int = 4,
                  num_evaluators: int = 4,
                  *,
                  resume_mode: bool = False,
-                 initial_sample_num: int | None = None,
                  debug_mode: bool = False,
-                 multi_thread_or_process_eval: str = 'thread',
+                 multi_thread_or_process_eval: Literal['thread', 'process'] = 'thread',
                  **kwargs):
-        """
+        """Hill Climbing Search.
         Args:
             template_program: the seed program (in str) as the initial function of the run.
                 the template_program should be executable, i.e., incorporating package import, and function definition, and function body.
@@ -68,11 +87,9 @@ class HillClimb:
         llm.debug_mode = debug_mode
         self._evaluator = SecureEvaluator(evaluation, debug_mode=debug_mode, **kwargs)
         self._profiler = profiler
-        if profiler is not None:
-            self._profiler.record_parameters(llm, evaluation, self)  # ZL: Necessary
 
         # statistics
-        self._tot_sample_nums = 0 if initial_sample_num is None else initial_sample_num
+        self._tot_sample_nums = 0
         self._best_function_found = self._function_to_evolve  # set to the template function at the beginning
 
         # multi-thread executor for evaluation
@@ -90,6 +107,10 @@ class HillClimb:
         self._sampler_threads = [
             Thread(target=self._sample_evaluate_register) for _ in range(self._num_samplers)
         ]
+
+        # pass parameters to profiler
+        if profiler is not None:
+            self._profiler.record_parameters(llm, evaluation, self)  # ZL: necessary
 
     def _init(self):
         # evaluate the template program, make sure the score of which is not 'None'
