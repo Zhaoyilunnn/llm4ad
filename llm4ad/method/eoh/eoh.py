@@ -57,7 +57,6 @@ class EoH:
                  num_evaluators: int = 1,
                  *,
                  resume_mode: bool = False,
-                 initial_sample_nums_max: int = 50,
                  debug_mode: bool = False,
                  multi_thread_or_process_eval: Literal['thread', 'process'] = 'thread',
                  **kwargs):
@@ -82,14 +81,8 @@ class EoH:
                 setting this parameter to 'process' will faster than 'thread'. However, I do not sure if this happens on all platform so I set the default to 'thread'.
                 Please note that there is one case that cannot utilize multi-core CPU: if you set 'safe_evaluate' argument in 'evaluator' to 'False',
                 and you set this argument to 'thread'.
-            initial_sample_nums_max     : maximum samples restriction during initialization.
             **kwargs                    : some args pass to 'llm4ad.base.SecureEvaluator'. Such as 'fork_proc'.
         """
-        assert initial_sample_nums_max <= max_sample_nums, \
-            'Error: "initial_sample_nums_max" must be <= "max_sample_nums".'
-        assert pop_size <= initial_sample_nums_max, \
-            'Error: "pop_size" must be <= "initial_sample_nums_max".'
-
         self._template_program_str = evaluation.template_program
         self._task_description_str = evaluation.task_description
         self._max_generations = max_generations
@@ -104,7 +97,6 @@ class EoH:
         self._num_samplers = num_samplers
         self._num_evaluators = num_evaluators
         self._resume_mode = resume_mode
-        self._initial_sample_nums_max = initial_sample_nums_max
         self._debug_mode = debug_mode
         llm.debug_mode = debug_mode
         self._multi_thread_or_process_eval = multi_thread_or_process_eval
@@ -127,8 +119,8 @@ class EoH:
         self._tot_sample_nums = 0
 
         # reset _initial_sample_nums_max
-        self._initial_sample_nums_max = max(
-            self._initial_sample_nums_max,
+        self._initial_sample_nums_max = min(
+            self._max_sample_nums,
             2 * self._pop_size
         )
 
@@ -283,7 +275,7 @@ class EoH:
                 # get a new func using i1
                 prompt = EoHPrompt.get_prompt_i1(self._task_description_str, self._function_to_evolve)
                 self._sample_evaluate_register(prompt)
-                if self._tot_sample_nums > self._initial_sample_nums_max:
+                if self._tot_sample_nums >= self._initial_sample_nums_max:
                     # print(f'Warning: Initialization not accomplished in {self._initial_sample_nums_max} samples !!!')
                     print(f'Note: During initialization, EoH gets {len(self._population)} algorithms after {self._initial_sample_nums_max} trails.')
                     break
@@ -311,6 +303,7 @@ class EoH:
         if not self._resume_mode:
             # do initialization
             self._multi_threaded_sampling(self._iteratively_init_population)
+            self._population.survival()
             # terminate searching if
             if len(self._population) < self._selection_num:
                 print(f'The search is terminated since EoH unable to obtain {self._selection_num} feasible algorithms during initialization. '
