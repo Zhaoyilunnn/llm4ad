@@ -111,7 +111,7 @@ $ pip install llm4ad
 >
 > 1) Set `host`: 'api.deepseek.com'
 > 2) Set `key`: 'your api key'
-> 3) Set `model`: `deepseek-chat'
+> 3) Set `model`: 'deepseek-chat'
 
 ```python
 from llm4ad.task.optimization.online_bin_packing import OBPEvaluation
