@@ -133,7 +133,7 @@ class SecureEvaluator:
                  evaluator: Evaluation,
                  debug_mode=False,
                  *,
-                 fork_proc: Literal['auto', 'default'] | bool = 'auto',
+                 fork_proc: Literal['auto', 'default'] | bool = False,
                  **kwargs):
         assert fork_proc in [True, False, 'auto', 'default']
         self._evaluator = evaluator
@@ -192,18 +192,27 @@ class SecureEvaluator:
                         result = result_queue.get(timeout=self._evaluator.timeout_seconds)
                         # after getting the result, terminate/kill the process
                         process.terminate()
-                        process.join()
+                        process.join(timeout=5)
+                        if process.is_alive():
+                            process.kill()
+                            process.join()
                     except:
                         # timeout
                         if self._debug_mode:
                             print(f'DEBUG: the evaluation time exceeds {self._evaluator.timeout_seconds}s.')
                         process.terminate()
-                        process.join()
+                        process.join(timeout=5)
+                        if process.is_alive():
+                            process.kill()
+                            process.join()
                         result = None
                 else:
                     result = result_queue.get()
                     process.terminate()
-                    process.join()
+                    process.join(timeout=5)
+                    if process.is_alive():
+                        process.kill()
+                        process.join()
                 return result
             else:
                 return self._evaluate(program_str, function_name, **kwargs)
