@@ -119,9 +119,9 @@ from llm4ad.tools.llm.llm_api_https import HttpsApi
 from llm4ad.method.eoh import EoH, EoHProfiler
 
 if __name__ == '__main__':
-	llm = HttpsApi(
-		host='xxx',   # your host endpoint, e.g., api.openai.com, api.deepseek.com
-    	key='sk-xxx', # your key, e.g., sk-xxxxxxxxxx
+    llm = HttpsApi(
+        host='xxx',   # your host endpoint, e.g., api.openai.com, api.deepseek.com
+        key='sk-xxx', # your key, e.g., sk-xxxxxxxxxx
         model='xxx',  # your llm, e.g., gpt-3.5-turbo, deepseek-chat
         timeout=20
     )
