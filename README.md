@@ -22,7 +22,7 @@ LLM4AD: Large Language Model for Algorithm Design
 </div>
 <br>
 
-## Introduction 📖
+## 📖 Introduction 
 
 LLM4AD is an open-source Python-based Platform leveraging **Large Language Models (LLMs)** for **Automatic Algorithm Design (AD)**. Please refer to the [paper](https://arxiv.org/pdf/2412.17287) [LLM4AD] for detailed information, including
 the overview, methodology, and benchmark results.
@@ -48,65 +48,59 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 
 ## 💡 Features of our package
 
-| Feature                                                                       | Support / To be supported |
-|-------------------------------------------------------------------------------|---------------------------|
-| **Unified Interfaces** for methods                                            | 🔥Support                 |
-| **Unified Interfaces** for tasks                                              | 🔥Support                 |
-| **Unified Interfaces** for LLMs                                               | 🔥Support                 |
-| **Evaluation acceleration:** multiprocessing evaluation                       | 🔥Support                 |
-| **Secure Evaluation:** main process protection, timeout interruption          | 🔥Support                 |
-| **Logs:** local logs, Wandb and Tensorboard support                           | 🔥Support                 |
-| **GUI:** methods selection, tasks selection, convergence, best algorithm, ... | 🔥Support                 |
-| **Resume run**                                                                | 🔥Support                 |
-| Support other programming languages                                           | 🚀Coming soon             |
-| More search methods                                                           | 🚀Coming soon             |
-| More task examples                                                            | 🚀Coming soon             |
+| Feature                                                      | Support / To be supported |
+| ------------------------------------------------------------ | ------------------------- |
+| **Unified Interfaces** for methods, tasks, LLMs              | 🔥Support                  |
+| **Evaluation acceleration:** multiprocessing evaluation      | 🔥Support                  |
+| **Secure Evaluation:** main process protection, timeout interruption | 🔥Support                  |
+| **Logs:** local logs, Wandb and Tensorboard support          | 🔥Support                  |
+| **GUI:** methods selection, tasks selection, convergence, best algorithm, ... | 🔥Support                  |
+| **Resume run**                                               | 🔥Support                  |
+| Support other programming languages                          | 🚀Coming soon              |
+| More search methods                                          | 🚀Coming soon              |
+| More task examples                                           | 🚀Coming soon              |
 
 ## 🎁 Requirements & Installation
 
 > [!Important]
-> The Python version **must** be larger or equal to Python 3.9, and less than Python 3.13.
+> The Python version **MUST** be larger or equal to Python 3.9, and less than Python 3.13.
 
 > [!Important]
 > If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
 > Please note that the gym version may be conflict with your own Python environment, please refer to gym's docs to obtain appropriate version.
 
-> [!Important]
-> If you are testing machine learning tasks or using GUI, please install gym via `pip install gym`. 
-> Please note that the gym version may be conflict with your own Python environment, please refer to gym's docs to obtain appropriate version.
+
+- Please refer to [requirements.txt](./requirements.txt)
+
+- Please install `numba` (if you want to use Numba accelerate)
+
+- Please install `tensorboard` (if you want to use a Tensorboard logger)
+
+- Please install `wandb` (if you want to use wandb logger)
+
+- Please install `gym` (if you want to try **GUI**, and **Machine Learning** tasks)
+
+- Please install `pandas` (if you want to try **Science Discovery** tasks)
+
+- Please install all required packages in [requirements.txt](./requirements.txt) (if you want to use GUI)
 
 
-- refer to [requirements.txt](./requirements.txt)
+### Install LLM4AD locally
 
-- Numba (if you want to use Numba accelerate)
+We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
 
-- Tensorboard (if you want to use a Tensorboard logger)
+```bash
+$ cd LLM4AD
+$ pip install .
+```
 
-- wandb (if you want to use wandb logger)
+### Install LLM4AD using PiPy
 
-- gym (if you want to try **GUI**, and **Machine Learning** tasks)
+We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
 
-- pandas (if you want to try **Science Discovery** tasks)
-
-- all required packages in [requirements.txt](./requirements.txt) (if you want to use GUI)
-
-  #### Install LLM4AD locally
-
-  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
-
-  ```bash
-  cd LLM4AD
-  
-  pip install .
-  ```
-
-  #### Install LLM4AD using PiPy
-
-  We suggest to install and run LLM4AD in [conda](https://conda.io/projects/conda/en/latest/index.html) env with python>=3.9, <3.13
-
-  ```bash
-  pip install llm4ad
-  ```
+```bash
+$ pip install llm4ad
+```
 
 ## 💻 Example Usage
 
@@ -117,38 +111,33 @@ For more information, see the [contact list](https://github.com/Optima-CityU/LLM
 >
 > 1) Set `host`: 'api.deepseek.com'
 > 2) Set `key`: 'your api key'
-> 3) Set `model` `deepseek-chat'
+> 3) Set `model`: `deepseek-chat'
 
 ```python
 from llm4ad.task.optimization.online_bin_packing import OBPEvaluation
 from llm4ad.tools.llm.llm_api_https import HttpsApi
 from llm4ad.method.eoh import EoH, EoHProfiler
 
-
-def main():
-    llm = HttpsApi(host="xxx",  # your host endpoint, e.g., api.openai.com, api.deepseek.com
-                   key="sk-xxx",  # your key, e.g., sk-xxxxxxxxxx
-                   model="xxx",  # your llm, e.g., gpt-3.5-turbo, deepseek-chat
-                   timeout=20)
-
-    task = OBPEvaluation()
-
-    method = EoH(llm=llm,
-                 profiler=EoHProfiler(log_dir='logs/eoh', log_style='simple'),
-                 evaluation=task,
-                 max_sample_nums=20,
-                 max_generations=10,
-                 pop_size=4,
-                 num_samplers=1,
-                 num_evaluators=1,
-                 debug_mode=False)
-
-    method.run()
-
-
 if __name__ == '__main__':
-    main()
-
+	llm = HttpsApi(
+		host='xxx',   # your host endpoint, e.g., api.openai.com, api.deepseek.com
+    	key='sk-xxx', # your key, e.g., sk-xxxxxxxxxx
+        model='xxx',  # your llm, e.g., gpt-3.5-turbo, deepseek-chat
+        timeout=20
+    )
+    task = OBPEvaluation()
+    method = EoH(
+        llm=llm,
+        profiler=EoHProfiler(log_dir='logs/eoh', log_style='simple'),
+        evaluation=task,
+        max_sample_nums=20,
+        max_generations=10,
+        pop_size=4,
+        num_samplers=1,
+        num_evaluators=1,
+        debug_mode=False
+    )
+    method.run()
 ```
 
 ### More Examples:
@@ -162,9 +151,9 @@ Check [Documents](https://llm4ad-doc.readthedocs.io/en/latest/index.html) for mo
 ### GUI usage:
 
 > [!Important]
-> Install all required packages in [requirements.txt](./requirements.txt) for GUI usage
+> Install all required packages in [requirements.txt](./requirements.txt) for GUI usage.
 
-```bash
+```shell
 $ cd GUI
 $ python run_gui.py
 ```
@@ -186,7 +175,7 @@ Check [GUI Introduction](https://llm4ad-doc.readthedocs.io/en/latest/getting_sta
 | Multi-objective search methods    | Coming soon                                                                                                                                                                                                                                                                                |
 | Others                            | Coming soon                                                                                                                                                                                                                                                                                |
 
-## 📦LLM4AD Algorithm Design Tasks
+## ⚙️ LLM4AD Algorithm Design Tasks
 
 | Area              | Algorithm Task                                                                                                                             | Paper                                                             |
 |-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
@@ -221,7 +210,7 @@ There are three approaches on LLM interface implementation, check [Tutorial on L
 + **Local HuggingFace LLM Deployment** (e.g., Llamacode, Llama, Gemma, Deepseek, ...)
 + **Your Implementation** If you want to use your own GPT API or local LLMs deployment, please create and add your interface in [LLM](https://github.com/Optima-CityU/LLM4AD/tree/main/llm4ad/tools/llm)
 
-## 🗎 Tutorial: How to Use LLM4AD to Solve Your Algorithm Design Task
+## 🏫 Tutorial: How to Use LLM4AD to Solve Your Algorithm Design Task
 
 A Step-by-step Tutorial on using LLM4AD to solve your algorithm design task is provided [here](https://llm4ad-doc.readthedocs.io/en/latest/dev/run_new_task.html#)
 
@@ -229,7 +218,7 @@ A Step-by-step Tutorial on using LLM4AD to solve your algorithm design task is p
 
 This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE) file for details. Parts of this project use code licensed under the Apache License 2.0.
 
-## ✨Reference
+## ✨ Reference
 
 If you find LLM4AD helpful please cite:
 
@@ -245,7 +234,7 @@ If you find LLM4AD helpful please cite:
 }
 ```
 
-## About LLM4AD
+## 📒 About LLM4AD
 
 This platform is developed and maintained by LLM4AD developer group from the City University of Hong Kong (CityUHK) and the Southern University of Science and Technology (SUSTech). We develop LLM4AD platform for research purposes and hope
 to contribute to the research area by delivering tools for LLM-based algorithm design methods.
@@ -259,7 +248,7 @@ to contribute to the research area by delivering tools for LLM-based algorithm d
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Optima-CityU/llm4ad&type=Date)](https://star-history.com/#Optima-CityU/llm4ad&Date)
 
-## Contact
+## ☎️ Contact
 
 If you are interested in LLM4AD or if you encounter any difficulty using the platform, you can:
 
