@@ -19,13 +19,11 @@
 
 from __future__ import annotations
 
-import json
 import os
-from threading import Lock
 from typing import Optional
 
-from llm4ad.base import Function
-from llm4ad.tools.profiler.profile import ProfilerBase
+from ...base import Function
+from .profile import ProfilerBase
 
 try:
     os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable TF onednn for better performance

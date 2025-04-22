@@ -22,8 +22,8 @@ from __future__ import annotations
 import sys
 from typing import Optional
 
-from llm4ad.base import Function
-from llm4ad.tools.profiler.profile import ProfilerBase
+from ...base import Function
+from .profile import ProfilerBase
 
 try:
     import wandb
