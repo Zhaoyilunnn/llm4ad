@@ -277,7 +277,8 @@ class EoH:
                 self._sample_evaluate_register(prompt)
                 if self._tot_sample_nums >= self._initial_sample_nums_max:
                     # print(f'Warning: Initialization not accomplished in {self._initial_sample_nums_max} samples !!!')
-                    print(f'Note: During initialization, EoH gets {len(self._population)} algorithms after {self._initial_sample_nums_max} trails.')
+                    print(f'Note: During initialization, EoH gets {len(self._population) + len(self._population._next_gen_pop)} algorithms '
+                          f'after {self._initial_sample_nums_max} trails.')
                     break
             except Exception:
                 if self._debug_mode:
