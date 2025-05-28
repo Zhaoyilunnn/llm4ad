@@ -36,30 +36,37 @@ from .profiler import EoHProfiler
 from .prompt import EoHPrompt
 from .sampler import EoHSampler
 from ...base import (
-    Evaluation, LLM, Function, Program, TextFunctionProgramConverter, SecureEvaluator
+    Evaluation,
+    LLM,
+    Function,
+    Program,
+    TextFunctionProgramConverter,
+    SecureEvaluator,
 )
 from ...tools.profiler import ProfilerBase
 
 
 class EoH:
-    def __init__(self,
-                 llm: LLM,
-                 evaluation: Evaluation,
-                 profiler: ProfilerBase = None,
-                 max_generations: Optional[int] = 10,
-                 max_sample_nums: Optional[int] = 100,
-                 pop_size: Optional[int] = 5,
-                 selection_num=2,
-                 use_e2_operator: bool = True,
-                 use_m1_operator: bool = True,
-                 use_m2_operator: bool = True,
-                 num_samplers: int = 1,
-                 num_evaluators: int = 1,
-                 *,
-                 resume_mode: bool = False,
-                 debug_mode: bool = False,
-                 multi_thread_or_process_eval: Literal['thread', 'process'] = 'thread',
-                 **kwargs):
+    def __init__(
+        self,
+        llm: LLM,
+        evaluation: Evaluation,
+        profiler: ProfilerBase = None,
+        max_generations: Optional[int] = 10,
+        max_sample_nums: Optional[int] = 100,
+        pop_size: Optional[int] = 5,
+        selection_num=2,
+        use_e2_operator: bool = True,
+        use_m1_operator: bool = True,
+        use_m2_operator: bool = True,
+        num_samplers: int = 1,
+        num_evaluators: int = 1,
+        *,
+        resume_mode: bool = False,
+        debug_mode: bool = False,
+        multi_thread_or_process_eval: Literal["thread", "process"] = "thread",
+        **kwargs,
+    ):
         """Evolutionary of Heuristics.
         Args:
             llm             : an instance of 'llm4ad.base.LLM', which provides the way to query LLM.
@@ -102,9 +109,13 @@ class EoH:
         self._multi_thread_or_process_eval = multi_thread_or_process_eval
 
         # function to be evolved
-        self._function_to_evolve: Function = TextFunctionProgramConverter.text_to_function(self._template_program_str)
+        self._function_to_evolve: Function = (
+            TextFunctionProgramConverter.text_to_function(self._template_program_str)
+        )
         self._function_to_evolve_name: str = self._function_to_evolve.name
-        self._template_program: Program = TextFunctionProgramConverter.text_to_program(self._template_program_str)
+        self._template_program: Program = TextFunctionProgramConverter.text_to_program(
+            self._template_program_str
+        )
 
         # adjust population size
         self._adjust_pop_size()
@@ -119,14 +130,11 @@ class EoH:
         self._tot_sample_nums = 0
 
         # reset _initial_sample_nums_max
-        self._initial_sample_nums_max = min(
-            self._max_sample_nums,
-            2 * self._pop_size
-        )
+        self._initial_sample_nums_max = min(self._max_sample_nums, 2 * self._pop_size)
 
         # multi-thread executor for evaluation
-        assert multi_thread_or_process_eval in ['thread', 'process']
-        if multi_thread_or_process_eval == 'thread':
+        assert multi_thread_or_process_eval in ["thread", "process"]
+        if multi_thread_or_process_eval == "thread":
             self._evaluation_executor = concurrent.futures.ThreadPoolExecutor(
                 max_workers=num_evaluators
             )
@@ -145,26 +153,34 @@ class EoH:
             if self._pop_size is None:
                 self._pop_size = 40
             elif abs(self._pop_size - 40) > 20:
-                print(f'Warning: population size {self._pop_size} '
-                      f'is not suitable, please reset it to 40.')
+                print(
+                    f"Warning: population size {self._pop_size} "
+                    f"is not suitable, please reset it to 40."
+                )
         elif self._max_sample_nums >= 1000:
             if self._pop_size is None:
                 self._pop_size = 20
             elif abs(self._pop_size - 20) > 10:
-                print(f'Warning: population size {self._pop_size} '
-                      f'is not suitable, please reset it to 20.')
+                print(
+                    f"Warning: population size {self._pop_size} "
+                    f"is not suitable, please reset it to 20."
+                )
         elif self._max_sample_nums >= 200:
             if self._pop_size is None:
                 self._pop_size = 10
             elif abs(self._pop_size - 10) > 5:
-                print(f'Warning: population size {self._pop_size} '
-                      f'is not suitable, please reset it to 10.')
+                print(
+                    f"Warning: population size {self._pop_size} "
+                    f"is not suitable, please reset it to 10."
+                )
         else:
             if self._pop_size is None:
                 self._pop_size = 5
             elif abs(self._pop_size - 5) > 5:
-                print(f'Warning: population size {self._pop_size} '
-                      f'is not suitable, please reset it to 5.')
+                print(
+                    f"Warning: population size {self._pop_size} "
+                    f"is not suitable, please reset it to 5."
+                )
 
     def _sample_evaluate_register(self, prompt):
         """Perform following steps:
@@ -178,14 +194,19 @@ class EoH:
         if thought is None or func is None:
             return
         # convert to Program instance
-        program = TextFunctionProgramConverter.function_to_program(func, self._template_program)
+        program = TextFunctionProgramConverter.function_to_program(
+            func, self._template_program
+        )
         if program is None:
             return
         # evaluate
         score, eval_time = self._evaluation_executor.submit(
-            self._evaluator.evaluate_program_record_time,
-            program
+            self._evaluator.evaluate_program_record_time, program
         ).result()
+        if self._debug_mode:
+            print(
+                f"Evaluated function: {func.name}, score: {score}, eval_time: {eval_time:.2f}s"
+            )
         # register to profiler
         func.score = score
         func.evaluate_time = eval_time
@@ -208,27 +229,37 @@ class EoH:
         elif self._max_generations is None and self._max_sample_nums is not None:
             return self._tot_sample_nums < self._max_sample_nums
         else:
-            return (self._population.generation < self._max_generations
-                    and self._tot_sample_nums < self._max_sample_nums)
+            return (
+                self._population.generation < self._max_generations
+                and self._tot_sample_nums < self._max_sample_nums
+            )
 
     def _iteratively_use_eoh_operator(self):
         while self._continue_loop():
             try:
                 # get a new func using e1
-                indivs = [self._population.selection() for _ in range(self._selection_num)]
-                prompt = EoHPrompt.get_prompt_e1(self._task_description_str, indivs, self._function_to_evolve)
+                indivs = [
+                    self._population.selection() for _ in range(self._selection_num)
+                ]
+                prompt = EoHPrompt.get_prompt_e1(
+                    self._task_description_str, indivs, self._function_to_evolve
+                )
                 if self._debug_mode:
-                    print(f'E1 Prompt: {prompt}')
+                    print(f"E1 Prompt: {prompt}")
                 self._sample_evaluate_register(prompt)
                 if not self._continue_loop():
                     break
 
                 # get a new func using e2
                 if self._use_e2_operator:
-                    indivs = [self._population.selection() for _ in range(self._selection_num)]
-                    prompt = EoHPrompt.get_prompt_e2(self._task_description_str, indivs, self._function_to_evolve)
+                    indivs = [
+                        self._population.selection() for _ in range(self._selection_num)
+                    ]
+                    prompt = EoHPrompt.get_prompt_e2(
+                        self._task_description_str, indivs, self._function_to_evolve
+                    )
                     if self._debug_mode:
-                        print(f'E2 Prompt: {prompt}')
+                        print(f"E2 Prompt: {prompt}")
                     self._sample_evaluate_register(prompt)
                     if not self._continue_loop():
                         break
@@ -236,9 +267,11 @@ class EoH:
                 # get a new func using m1
                 if self._use_m1_operator:
                     indiv = self._population.selection()
-                    prompt = EoHPrompt.get_prompt_m1(self._task_description_str, indiv, self._function_to_evolve)
+                    prompt = EoHPrompt.get_prompt_m1(
+                        self._task_description_str, indiv, self._function_to_evolve
+                    )
                     if self._debug_mode:
-                        print(f'M1 Prompt: {prompt}')
+                        print(f"M1 Prompt: {prompt}")
                     self._sample_evaluate_register(prompt)
                     if not self._continue_loop():
                         break
@@ -246,9 +279,11 @@ class EoH:
                 # get a new func using m2
                 if self._use_m2_operator:
                     indiv = self._population.selection()
-                    prompt = EoHPrompt.get_prompt_m2(self._task_description_str, indiv, self._function_to_evolve)
+                    prompt = EoHPrompt.get_prompt_m2(
+                        self._task_description_str, indiv, self._function_to_evolve
+                    )
                     if self._debug_mode:
-                        print(f'M2 Prompt: {prompt}')
+                        print(f"M2 Prompt: {prompt}")
                     self._sample_evaluate_register(prompt)
                     if not self._continue_loop():
                         break
@@ -273,12 +308,16 @@ class EoH:
         while self._population.generation == 0:
             try:
                 # get a new func using i1
-                prompt = EoHPrompt.get_prompt_i1(self._task_description_str, self._function_to_evolve)
+                prompt = EoHPrompt.get_prompt_i1(
+                    self._task_description_str, self._function_to_evolve
+                )
                 self._sample_evaluate_register(prompt)
                 if self._tot_sample_nums >= self._initial_sample_nums_max:
                     # print(f'Warning: Initialization not accomplished in {self._initial_sample_nums_max} samples !!!')
-                    print(f'Note: During initialization, EoH gets {len(self._population) + len(self._population._next_gen_pop)} algorithms '
-                          f'after {self._initial_sample_nums_max} trails.')
+                    print(
+                        f"Note: During initialization, EoH gets {len(self._population) + len(self._population._next_gen_pop)} algorithms "
+                        f"after {self._initial_sample_nums_max} trails."
+                    )
                     break
             except Exception:
                 if self._debug_mode:
@@ -307,9 +346,11 @@ class EoH:
             self._population.survival()
             # terminate searching if
             if len(self._population) < self._selection_num:
-                print(f'The search is terminated since EoH unable to obtain {self._selection_num} feasible algorithms during initialization. '
-                      f'Please increase the `initial_sample_nums_max` argument (currently {self._initial_sample_nums_max}). '
-                      f'Please also check your evaluation implementation and LLM implementation.')
+                print(
+                    f"The search is terminated since EoH unable to obtain {self._selection_num} feasible algorithms during initialization. "
+                    f"Please increase the `initial_sample_nums_max` argument (currently {self._initial_sample_nums_max}). "
+                    f"Please also check your evaluation implementation and LLM implementation."
+                )
                 return
         # evolutionary search
         self._multi_threaded_sampling(self._iteratively_use_eoh_operator)

@@ -23,7 +23,10 @@ import multiprocessing
 import sys
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Literal
+from typing import Any, Literal, Optional  # Added Optional
+import io  # Added for stdout capture
+import traceback  # Added for exception traceback capture
+import queue  # Added for queue.Empty
 
 from .code import TextFunctionProgramConverter, Program
 from .modify_code import ModifyCode
@@ -31,18 +34,18 @@ from .modify_code import ModifyCode
 
 class Evaluation(ABC):
     def __init__(
-            self,
-            template_program: str | Program,
-            task_description: str = '',
-            use_numba_accelerate: bool = False,
-            use_protected_div: bool = False,
-            protected_div_delta: float = 1e-5,
-            random_seed: int | None = None,
-            timeout_seconds: int | float = None,
-            *,
-            exec_code: bool = True,
-            safe_evaluate: bool = True,
-            daemon_eval_process: bool = False
+        self,
+        template_program: str | Program,
+        task_description: str = "",
+        use_numba_accelerate: bool = False,
+        use_protected_div: bool = False,
+        protected_div_delta: float = 1e-5,
+        random_seed: int | None = None,
+        timeout_seconds: Optional[int | float] = None,  # Changed to Optional
+        *,
+        exec_code: bool = True,
+        safe_evaluate: bool = True,
+        daemon_eval_process: bool = False,
     ):
         """Evaluation interface for executing generated code.
         Args:
@@ -98,7 +101,9 @@ class Evaluation(ABC):
         self.daemon_eval_process = daemon_eval_process
 
     @abstractmethod
-    def evaluate_program(self, program_str: str, callable_func: callable, **kwargs) -> Any | None:
+    def evaluate_program(
+        self, program_str: str, callable_func: callable, **kwargs
+    ) -> Any | None:
         r"""Evaluate a given function. You can use compiled function (function_callable),
         as well as the original function strings for evaluation.
         Args:
@@ -125,29 +130,33 @@ class Evaluation(ABC):
         As shown above, the 'import numba', 'numba.jit()' decorator,
         and '_protected_dev' will be added by this function.
         """
-        raise NotImplementedError('Must provide a evaluator for a function.')
+        raise NotImplementedError("Must provide a evaluator for a function.")
 
 
 class SecureEvaluator:
-    def __init__(self,
-                 evaluator: Evaluation,
-                 debug_mode=False,
-                 *,
-                 fork_proc: Literal['auto', 'default'] | bool = False,
-                 **kwargs):
-        assert fork_proc in [True, False, 'auto', 'default']
+    def __init__(
+        self,
+        evaluator: Evaluation,
+        debug_mode=False,
+        *,
+        fork_proc: Literal["auto", "default"] | bool = False,
+        **kwargs,
+    ):
+        assert fork_proc in [True, False, "auto", "default"]
         self._evaluator = evaluator
         self._debug_mode = debug_mode
 
         if self._evaluator.safe_evaluate:
-            if fork_proc == 'auto':
+            if fork_proc == "auto":
                 # force MacOS and Linux use 'fork' to generate new process
-                if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-                    multiprocessing.set_start_method('fork', force=True)
+                if sys.platform.startswith("darwin") or sys.platform.startswith(
+                    "linux"
+                ):
+                    multiprocessing.set_start_method("fork", force=True)
             elif fork_proc is True:
-                multiprocessing.set_start_method('fork', force=True)
+                multiprocessing.set_start_method("fork", force=True)
             elif fork_proc is False:
-                multiprocessing.set_start_method('spawn', force=True)
+                multiprocessing.set_start_method("spawn", force=True)
 
     def _modify_program_code(self, program_str: str) -> str:
         function_name = TextFunctionProgramConverter.text_to_function(program_str).name
@@ -157,7 +166,9 @@ class SecureEvaluator:
             )
         if self._evaluator.use_protected_div:
             program_str = ModifyCode.replace_div_with_protected_div(
-                program_str, self._evaluator.protected_div_delta, self._evaluator.use_numba_accelerate
+                program_str,
+                self._evaluator.protected_div_delta,
+                self._evaluator.use_numba_accelerate,
             )
         if self._evaluator.random_seed is not None:
             program_str = ModifyCode.add_numpy_random_seed_to_func(
@@ -169,11 +180,18 @@ class SecureEvaluator:
         try:
             program_str = str(program)
             # record function name BEFORE modifying program code
-            function_name = TextFunctionProgramConverter.text_to_function(program_str).name
+            func_obj = TextFunctionProgramConverter.text_to_function(program_str)
+            if func_obj is None:
+                if self._debug_mode:
+                    print(
+                        f"DEBUG: Could not convert program string to function object.\nProgram:\n{program_str}"
+                    )
+                return None
+            function_name = func_obj.name
 
             program_str = self._modify_program_code(program_str)
             if self._debug_mode:
-                print(f'DEBUG: evaluated program:\n{program_str}\n')
+                print(f"DEBUG: evaluated program:\n{program_str}\n")
 
             # safe evaluate
             if self._evaluator.safe_evaluate:
@@ -182,43 +200,57 @@ class SecureEvaluator:
                     target=self._evaluate_in_safe_process,
                     args=(program_str, function_name, result_queue),
                     kwargs=kwargs,
-                    daemon=self._evaluator.daemon_eval_process
+                    daemon=self._evaluator.daemon_eval_process,
                 )
                 process.start()
 
                 if self._evaluator.timeout_seconds is not None:
+                    eval_result = None
+                    captured_stdout: str = ""  # Explicitly typed
                     try:
                         # get the result in timeout seconds
-                        result = result_queue.get(timeout=self._evaluator.timeout_seconds)
+                        eval_result, captured_stdout = result_queue.get(
+                            timeout=self._evaluator.timeout_seconds
+                        )
                         # after getting the result, terminate/kill the process
                         process.terminate()
                         process.join(timeout=5)
                         if process.is_alive():
                             process.kill()
                             process.join()
-                    except:
+                    except queue.Empty:  # Changed to specific exception
                         # timeout
                         if self._debug_mode:
-                            print(f'DEBUG: the evaluation time exceeds {self._evaluator.timeout_seconds}s.')
+                            print(
+                                f"DEBUG: the evaluation time exceeds {self._evaluator.timeout_seconds}s."
+                            )
                         process.terminate()
                         process.join(timeout=5)
                         if process.is_alive():
                             process.kill()
                             process.join()
-                        result = None
+                        eval_result = None
+                        captured_stdout = f"[INFO] Evaluation timed out after {self._evaluator.timeout_seconds}s. Stdout not fully captured."
                 else:
-                    result = result_queue.get()
+                    eval_result, captured_stdout = result_queue.get()
                     process.terminate()
                     process.join(timeout=5)
                     if process.is_alive():
                         process.kill()
                         process.join()
-                return result
+
+                if captured_stdout and captured_stdout.strip():
+                    print(
+                        f"--- Stdout from evaluated program (safe process) ---\n{captured_stdout.strip()}\n----------------------------------------------------"
+                    )
+                return eval_result
             else:
+                # Non-safe evaluation directly calls _evaluate
                 return self._evaluate(program_str, function_name, **kwargs)
         except Exception as e:
             if self._debug_mode:
-                print(e)
+                print(f"Error in SecureEvaluator.evaluate_program: {e}")
+                traceback.print_exc()
             return None
 
     def evaluate_program_record_time(self, program: str | Program, **kwargs):
@@ -226,42 +258,73 @@ class SecureEvaluator:
         result = self.evaluate_program(program, **kwargs)
         return result, time.time() - evaluate_start
 
-    def _evaluate_in_safe_process(self, program_str: str, function_name, result_queue: multiprocessing.Queue, **kwargs):
+    def _evaluate_in_safe_process(
+        self,
+        program_str: str,
+        function_name,
+        result_queue: multiprocessing.Queue,
+        **kwargs,
+    ):
+        old_stdout = sys.stdout
+        sys.stdout = captured_stdout_buffer = io.StringIO()
+        res = None
+        output_str = ""
+
         try:
             if self._evaluator.exec_code:
-                # compile the program, and maps the global func/var/class name to its address
                 all_globals_namespace = {}
-                # execute the program, map func/var/class to global namespace
                 exec(program_str, all_globals_namespace)
-                # get the pointer of 'function_to_run'
                 program_callable = all_globals_namespace[function_name]
             else:
                 program_callable = None
 
-            # get evaluate result
-            res = self._evaluator.evaluate_program(program_str, program_callable, **kwargs)
-            result_queue.put(res)
+            res = self._evaluator.evaluate_program(
+                program_str, program_callable, **kwargs
+            )
         except Exception as e:
             if self._debug_mode:
-                print(e)
-            result_queue.put(None)
+                print(
+                    f"Exception during evaluation in safe process: {e}",
+                    file=captured_stdout_buffer,
+                )
+                traceback.print_exc(file=captured_stdout_buffer)
+            # res remains None or its value before exception
+        finally:
+            output_str = captured_stdout_buffer.getvalue()
+            sys.stdout = old_stdout  # Restore stdout for this child process
+            result_queue.put((res, output_str))
 
     def _evaluate(self, program_str: str, function_name, **kwargs):
+        old_stdout = sys.stdout
+        sys.stdout = captured_stdout_buffer = io.StringIO()
+        res = None
+        output_str = ""
+
         try:
             if self._evaluator.exec_code:
-                # compile the program, and maps the global func/var/class name to its address
                 all_globals_namespace = {}
-                # execute the program, map func/var/class to global namespace
                 exec(program_str, all_globals_namespace)
-                # get the pointer of 'function_to_run'
                 program_callable = all_globals_namespace[function_name]
             else:
                 program_callable = None
 
-            # get evaluate result
-            res = self._evaluator.evaluate_program(program_str, program_callable, **kwargs)
-            return res
+            res = self._evaluator.evaluate_program(
+                program_str, program_callable, **kwargs
+            )
         except Exception as e:
             if self._debug_mode:
-                print(e)
-            return None
+                print(
+                    f"Exception during non-safe evaluation: {e}",
+                    file=captured_stdout_buffer,
+                )
+                traceback.print_exc(file=captured_stdout_buffer)
+            # res remains None or its value before exception
+        finally:
+            output_str = captured_stdout_buffer.getvalue()
+            sys.stdout = old_stdout  # Restore original stdout
+
+        if output_str and output_str.strip():
+            print(
+                f"--- Stdout from evaluated program (non-safe) ---\n{output_str.strip()}\n--------------------------------------------------"
+            )
+        return res
